@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "lib": ["DOM","ESNext"],
+    "allowJs": true,
+    "checkJs": true,
+    "alwaysStrict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+  },
+  "files": [
+    "src/main.js"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
