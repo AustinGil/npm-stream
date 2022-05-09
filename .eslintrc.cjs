@@ -1,7 +1,10 @@
+/**
+ * ESLint configuration file
+ * @see https://eslint.org/docs/user-guide/configuring/
+ */
 module.exports = {
   env: {
     browser: true,
-    es2021: true,
     node: true,
   },
   extends: [
@@ -10,10 +13,6 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
   ],
   parser: '@typescript-eslint/parser',
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-  },
   plugins: ['@typescript-eslint'],
   rules: {
     'comma-dangle': ['error', 'only-multiline'],
@@ -24,7 +23,6 @@ module.exports = {
     ],
     'no-console': 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-    '@typescript-eslint/ban-ts-comment': 'off',
     'prettier/prettier': [
       'error',
       {
