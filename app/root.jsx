@@ -25,7 +25,18 @@ export const links = () => {
 };
 
 // Required for actions sent to base route
-export { action } from './routes/index.jsx';
+export { action } from './routes/create.jsx';
+
+const navLinks = [
+  {
+    to: '/',
+    text: 'Home',
+  },
+  {
+    to: '/create',
+    text: 'Create',
+  },
+];
 
 export default function App() {
   return (
@@ -38,9 +49,11 @@ export default function App() {
         <header>
           <nav>
             <ul className="flex">
-              <li>
-                <NavLink to="/">Neighborhood Pet Manager</NavLink>
-              </li>
+              {navLinks.map((link) => (
+                <li key={link.to}>
+                  <NavLink to={link.to}>{link.text}</NavLink>
+                </li>
+              ))}
             </ul>
           </nav>
         </header>
