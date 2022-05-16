@@ -45,10 +45,10 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="max-is-640 m-auto">
         <header>
           <nav>
-            <ul className="flex">
+            <ul className="flex gap-8">
               {navLinks.map((link) => (
                 <li key={link.to}>
                   <NavLink to={link.to}>{link.text}</NavLink>

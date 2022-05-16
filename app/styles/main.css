@@ -1,3 +1,59 @@
+:root {
+  --primary: green;
+}
+html {
+  accent-color: var(--primary);
+}
+ul[class] {
+  padding-left: 0;
+  list-style-type: none;
+}
+input[type="checkbox"] {
+  appearance: none;
+  width: 1rem;
+  height: 1rem;
+  margin-bottom: -0.15rem;
+  margin-right: 0.25rem;
+}
+input[type="checkbox"]:checked {
+  background: var(--primary);
+  background-image: url(
+  'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M13 4a1 1 0 0 1 1 0v1l-6 7a1 1 0 0 1-1 0L3 8a1 1 0 0 1 0-1 1 1 0 0 1 1 0l3 3 6-6Z"/></svg>');
+}
+.visually-hidden {
+  position: absolute;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  border: 0;
+  padding: 0;
+}
+
 .flex {
   display: flex;
+}
+.align-center {
+  align-items: center;
+}
+.align-end {
+  align-items: flex-end;
+}
+.flex-grow {
+  flex-grow: 1;
+}
+.gap-8 {
+  gap: .5rem;
+}
+.gap-16 {
+  gap: 1rem;
+}
+
+.max-is-640 {
+  max-inline-size: 40rem;
+}
+
+.m-auto {
+  margin: auto;
 }
