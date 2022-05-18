@@ -51,3 +51,26 @@ rm -rf app
 # copy your app over
 cp -R ../my-old-remix-app/app app
 ```
+
+Content Outline
+- Intro
+  - What/why a DB
+  - Setting up dev env
+  - Schema design
+- Basic operations
+  - Create
+  - Read
+  - Update
+  - Delete
+- Listing content
+  - Pagination
+  - Filtering
+  - Sorting
+- Advanced concepts
+  - Migrations
+  - Relationships
+  - Transactions
+- Deploy
+  - Dev vs Staging vs Prod
+  - What/why managed DB
+  - Deploying to Linode

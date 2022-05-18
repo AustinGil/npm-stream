@@ -1,4 +1,6 @@
-import { randomString } from '../utils.js';
+import { randomString, getRawType } from '../utils.js';
+
+/** @type {import('react').FunctionComponentElement} */
 const Input = ({
   id,
   name,
@@ -6,11 +8,27 @@ const Input = ({
   className,
   classes = {},
   type = 'text',
-  options,
+  options = [],
   ...attrs
 }) => {
   if (!label) console.warn('Input is missing a label');
   if (!name) console.warn('Input is missing a name');
+
+  /**
+   * @type {Array<{
+   *  label: string,
+   *  value: string | number,
+   * }>}
+   */
+  const computedOptions = options.map((option) => {
+    if (getRawType(option) !== 'object') {
+      option = {
+        label: option,
+        value: option,
+      };
+    }
+    return option;
+  });
 
   id = id ? id : `id-${randomString(6)}`;
   return (
@@ -23,9 +41,9 @@ const Input = ({
 
       {type === 'select' && (
         <select id={id} name={name} {...attrs} className={classes.input}>
-          {options.map((option) => (
-            <option key={option} value={option}>
-              {option}
+          {computedOptions.map((option) => (
+            <option key={option.value} {...option}>
+              {option.label}
             </option>
           ))}
         </select>

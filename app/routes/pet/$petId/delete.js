@@ -2,9 +2,9 @@ import { redirect } from '@remix-run/node';
 import db from '../../../db/index.js';
 
 export async function action({ params }) {
-  const id = Number(params.petId);
+  const id = params.petId;
 
-  await db.user.delete({
+  await db.pet.delete({
     where: { id },
   });
 

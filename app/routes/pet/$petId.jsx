@@ -1,12 +1,13 @@
 import { useLoaderData, useActionData } from '@remix-run/react';
 import { useState } from 'react';
-import { z } from 'zod';
 import db from '../../db/index.js';
+import { petTypes, petSchema } from '../create.jsx';
+import Input from '../../components/Input.jsx';
 
 export const loader = async ({ params }) => {
-  const id = Number(params.petId);
+  const id = params.petId;
   return {
-    data: await db.user.findFirst({
+    data: await db.pet.findFirst({
       where: {
         id: id,
       },
@@ -15,16 +16,11 @@ export const loader = async ({ params }) => {
 };
 
 export async function action({ params, request }) {
-  const id = Number(params.petId);
+  const id = params.petId;
   const formData = await request.formData();
   const body = Object.fromEntries(formData.entries());
 
-  const userSchema = z.object({
-    name: z.string().min(1),
-    email: z.string().email(),
-  });
-
-  const { error, success, data } = userSchema.safeParse(body);
+  const { error, success, data } = petSchema.safeParse(body);
 
   if (!success) {
     return {
@@ -32,7 +28,7 @@ export async function action({ params, request }) {
     };
   }
 
-  const user = await db.user.update({
+  const pet = await db.pet.update({
     where: {
       id: id,
     },
@@ -40,22 +36,26 @@ export async function action({ params, request }) {
   });
 
   return {
-    data: user,
+    data: pet,
   };
 }
 
 export default function Index() {
-  const { data: doggo } = useLoaderData();
+  const { data: pet } = useLoaderData();
   const actionData = useActionData();
-  const [name, setName] = useState(doggo.name);
+  const [name, setName] = useState(pet.name);
 
   function updateName(event) {
     setName(event.target.value);
   }
+  const petOptions = petTypes.map((type) => ({
+    label: type.charAt(0).toUpperCase() + type.slice(1),
+    value: type,
+  }));
 
   return (
     <div>
-      <h1>{name || doggo.name}</h1>
+      <h1>{name || pet.name}</h1>
 
       {actionData?.errors?.length && (
         <ul>
@@ -65,32 +65,28 @@ export default function Index() {
         </ul>
       )}
       <form method="POST">
-        <div>
-          <label htmlFor="name">Name</label>
-          <input
-            id="name"
-            name="name"
-            required
-            value={name}
-            onChange={updateName}
-          />
-        </div>
-        <div>
-          <label htmlFor="email">Email</label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            required
-            defaultValue={doggo.email}
-          />
-        </div>
+        <Input
+          id="name"
+          name="name"
+          label="Name"
+          value={name}
+          onChange={updateName}
+        />
+        <Input
+          name="type"
+          label="Type"
+          id="type"
+          type="select"
+          options={['', ...petOptions]}
+          defaultValue={pet.type}
+          required
+        />
 
-        <button type="submit">Edit Doggo</button>
+        <button type="submit">Edit Pet</button>
       </form>
 
-      <form action={`/pet/${doggo.id}/delete`} method="POST">
-        <button>Delete Doggo</button>
+      <form action={`/pet/${pet.id}/delete`} method="POST">
+        <button>Delete Pet</button>
       </form>
     </div>
   );

@@ -73,7 +73,7 @@ export const loader = async ({ request }) => {
     allowedColumns: ['id', 'name'],
   });
 
-  /** @type {import('@prisma/client').Prisma.UserFindManyArgs} */
+  /** @type {import('@prisma/client').Prisma.PetFindManyArgs} */
   const params = {
     take: query.perPage,
     skip: query.page * query.perPage,
@@ -100,8 +100,8 @@ export const loader = async ({ request }) => {
   }
 
   const [items, count] = await Promise.all([
-    db.user.findMany(params),
-    db.user.count(countParams),
+    db.pet.findMany(params),
+    db.pet.count(countParams),
   ]);
   return {
     query: params,
