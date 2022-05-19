@@ -6,16 +6,12 @@ import Input from '../../components/Input.jsx';
 
 export const loader = async ({ params }) => {
   const id = params.petId;
-  const pet = await db.pet.findFirst({
-    where: {
-      id: id,
-    },
-    include: {
-      owner: true,
-    },
-  });
   return {
-    data: pet,
+    data: await db.pet.findFirst({
+      where: {
+        id: id,
+      },
+    }),
   };
 };
 
@@ -78,20 +74,12 @@ export default function Index() {
           onChange={updateName}
         />
         <Input
-          id="type"
           name="type"
           label="Type"
+          id="type"
           type="select"
           options={['', ...petOptions]}
           defaultValue={pet.type}
-          required
-        />
-        <Input
-          id="birthday"
-          name="birthday"
-          label="Birthday"
-          type="date"
-          defaultValue={new Date(pet.birthday).toISOString().split('T')[0]}
           required
         />
 

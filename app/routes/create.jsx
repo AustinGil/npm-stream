@@ -10,7 +10,7 @@ export const petTypes = ['dog', 'cat', 'bird', 'reptile', 'fish', 'other'];
 export const petSchema = z.object({
   name: z.string().min(1),
   type: z.enum(petTypes),
-  birthday: z.date().optional(),
+  birthday: z.preprocess((v) => new Date(v), z.date().optional()),
   // owner: TODO person ID
 });
 

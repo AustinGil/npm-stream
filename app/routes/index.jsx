@@ -113,6 +113,7 @@ export const loader = async ({ request }) => {
 };
 
 export default function Index() {
+  /** @type {Awaited<ReturnType<typeof loader>>} */
   const { data, query } = useLoaderData();
   const doggos = data.items;
   // const searchParams = new URLSearchParams(query)
