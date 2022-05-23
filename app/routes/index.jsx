@@ -1,6 +1,6 @@
 import { useLoaderData, Link } from '@remix-run/react';
 import db from '../db/index.js';
-import Input from '../components/Input.jsx';
+import { Btn, Card, Input } from '../components/index.js';
 
 const DEFAULT_PER_PAGE = 10;
 
@@ -141,8 +141,9 @@ export default function Index() {
             defaultValue={query.where?.name?.contains ?? ''}
             className="flex-grow"
           />
-          <button>Search</button>
+          <Btn type="submit">Search</Btn>
         </div>
+
         <div className="flex align-center gap-16">
           <div className="flex align-center gap-8">
             <Input
@@ -200,18 +201,27 @@ export default function Index() {
           </div>
         </div>
       </form>
+
       {doggos.length && (
         <>
-          <ul>
+          <ul className="grid columns-3 gap-8">
             {doggos.map((doggo) => (
               <li key={doggo.id}>
-                <Link to={`/pet/${doggo.id}`}>
-                  {doggo.name} ({doggo.id})
-                </Link>
+                <Card
+                  title={doggo.name}
+                  to={`/pet/${doggo.id}`}
+                  thumb="https://placedog.net/500"
+                  thumbAlt={doggo.name}
+                >
+                  <p>Text</p>
+                  <a href="#">text</a>
+                </Card>
               </li>
             ))}
           </ul>
+
           {JSON.stringify(query)}
+
           <nav>
             {currentPage > 1 && (
               <Link to={`/?${previousParams.toString()}`}>Previous Page</Link>

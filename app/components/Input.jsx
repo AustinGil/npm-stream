@@ -1,6 +1,12 @@
 import { randomString, getRawType } from '../utils.js';
 
-/** @type {import('react').FunctionComponentElement} */
+/**
+ * @type {React.FC<React.InputHTMLAttributes & {
+ * label: string,
+ * classes: {},
+ * options: Array<string | (React.OptionHTMLAttributes & { label: string, value: string })>,
+ * }>}
+ */
 const Input = ({
   id,
   name,
@@ -32,7 +38,11 @@ const Input = ({
 
   id = id ? id : `id-${randomString(6)}`;
   return (
-    <div className={[className, classes.root].filter(Boolean).join(' ')}>
+    <div
+      className={['app-input', className, classes.root]
+        .filter(Boolean)
+        .join(' ')}
+    >
       {type !== 'checkbox' && (
         <label htmlFor={id} className={classes.label}>
           {label}
@@ -40,7 +50,14 @@ const Input = ({
       )}
 
       {type === 'select' && (
-        <select id={id} name={name} {...attrs} className={classes.input}>
+        <select
+          id={id}
+          name={name}
+          {...attrs}
+          className={['radius-4 color-inherit bg-white', classes.input]
+            .filter(Boolean)
+            .join(' ')}
+        >
           {computedOptions.map((option) => (
             <option key={option.value} {...option}>
               {option.label}
@@ -55,7 +72,9 @@ const Input = ({
           name={name}
           type={type}
           {...attrs}
-          className={classes.input}
+          className={['radius-4 color-inherit bg-white', classes.input]
+            .filter(Boolean)
+            .join(' ')}
         />
       )}
 

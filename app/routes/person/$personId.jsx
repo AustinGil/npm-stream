@@ -2,7 +2,7 @@ import { useLoaderData, useActionData } from '@remix-run/react';
 import { useState } from 'react';
 import db from '../../db/index.js';
 import { petTypes, petSchema } from '../create.jsx';
-import Input from '../../components/Input.jsx';
+import { Btn, Input } from '../../components/index.js';
 
 export const loader = async ({ params }) => {
   const id = params.petId;
@@ -83,11 +83,11 @@ export default function Index() {
           required
         />
 
-        <button type="submit">Edit Pet</button>
+        <Btn type="submit">Edit Pet</Btn>
       </form>
 
       <form action={`/pet/${pet.id}/delete`} method="POST">
-        <button>Delete Pet</button>
+        <Btn type="submit">Delete Pet</Btn>
       </form>
     </div>
   );

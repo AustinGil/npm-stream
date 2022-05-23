@@ -3,7 +3,7 @@ import { useActionData, Link } from '@remix-run/react';
 import { z } from 'zod';
 import { ulid } from 'ulid';
 import db from '../db/index.js';
-import Input from '../components/Input.jsx';
+import { Btn, Input } from '../components/index.js';
 
 export const petTypes = ['dog', 'cat', 'bird', 'reptile', 'fish', 'other'];
 
@@ -64,7 +64,7 @@ export default function Index() {
           required
         />
 
-        <button type="submit">Add Doggo</button>
+        <Btn type="submit">Add Doggo</Btn>
         <Link to="/">Cancel</Link>
       </form>
     </div>
