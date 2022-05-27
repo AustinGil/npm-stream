@@ -202,7 +202,7 @@ export default function Index() {
         </div>
       </form>
 
-      {doggos.length && (
+      {doggos.length > 0 && (
         <>
           <ul className="grid columns-3 gap-8">
             {doggos.map((doggo) => (
@@ -212,10 +212,7 @@ export default function Index() {
                   to={`/pet/${doggo.id}`}
                   thumb="https://placedog.net/500"
                   thumbAlt={doggo.name}
-                >
-                  <p>Text</p>
-                  <a href="#">text</a>
-                </Card>
+                ></Card>
               </li>
             ))}
           </ul>

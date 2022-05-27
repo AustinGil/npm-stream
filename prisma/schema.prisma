@@ -6,10 +6,8 @@ generator client {
 }
 
 datasource db {
-  // provider = "postgresql"
-  // url      = env("DATABASE_URL")
   provider = "sqlite"
-  url      = "file:./dev.db"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -22,8 +20,6 @@ model Person {
   id      String      @id
   name    String
   pet     Pet[]
-
-  @@map("pet_id")
 }
 
 // model Person_Pet {
@@ -45,8 +41,6 @@ model Pet {
   type    String
   birthday DateTime   @default(now())
   owner   Person[]
-  
-  @@map("person_id")
 }
 // Pet
 // -

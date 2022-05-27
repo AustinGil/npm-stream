@@ -36,6 +36,10 @@ const navLinks = [
     to: '/create',
     text: 'Create',
   },
+  {
+    to: '/person',
+    text: 'Owners',
+  },
 ];
 
 export default function App() {

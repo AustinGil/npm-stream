@@ -15,17 +15,25 @@ const Btn = ({
 }) => {
   if (thumb && thumbAlt === undefined) console.warn('thumbAlt is required');
 
-  let contentClassName = 'border p-8 bg-white';
-  contentClassName += thumb ? ' radius-b-4' : ' radius-4';
-
   return (
     <div
-      className={['card relative', className].filter(Boolean).join(' ')}
+      className={['card relative overflow-hidden radius-8 bg-white', className]
+        .filter(Boolean)
+        .join(' ')}
       {...attrs}
     >
-      {thumb && <img src={thumb} alt={thumbAlt} className="radius-t-4" />}
+      {thumb && (
+        <div className="aspect-3/2">
+          <img
+            src={thumb}
+            alt={thumbAlt}
+            loading="lazy"
+            className="inline-size-full block-size-full fit-cover radius-t-4"
+          />
+        </div>
+      )}
 
-      <div className={contentClassName}>
+      <div className="p-8">
         {title && (
           <h3>
             {to && (

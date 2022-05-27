@@ -103,6 +103,9 @@ input[type="checkbox"]:checked {
 .absolute {
   position: absolute;
 }
+.overflow-hidden {
+  overflow: hidden;
+}
 .inset-0 {
   inset: 0;
 }
@@ -133,18 +136,36 @@ input[type="checkbox"]:checked {
   gap: 1rem;
 }
 
+.inline-size-full {
+  inline-size: 100%;
+}
+.block-size-full {
+  block-size: 100%;
+}
 .max-is-640 {
   max-inline-size: 40rem;
+}
+.aspect-3\/2 {
+  aspect-ratio: 3/2;
 }
 
 .m-auto {
   margin: auto;
 }
+.mbe-16 {
+  margin-bottom: 1rem;
+}
 .border {
   border: 1px solid;
 }
+.border-t-0 {
+  border-top: 0;
+}
 .radius-4 {
   border-radius: .25rem;
+}
+.radius-8 {
+  border-radius: .5rem;
 }
 .radius-t-4 {
   border-top-right-radius: .25rem;
@@ -154,6 +175,14 @@ input[type="checkbox"]:checked {
   border-bottom-right-radius: .25rem;
   border-bottom-left-radius: .25rem;
 }
+.radius-t-8 {
+  border-top-right-radius: .5rem;
+  border-top-left-radius: .5rem;
+}
+.radius-b-8 {
+  border-bottom-right-radius: .5rem;
+  border-bottom-left-radius: .5rem;
+}
 .p-8 {
   padding: .5rem;
 }
@@ -162,6 +191,10 @@ input[type="checkbox"]:checked {
           padding-inline-start: .75rem;
   -webkit-padding-end: .75rem;
           padding-inline-end: .75rem;
+}
+
+.size-24 {
+  font-size: 1.5rem;
 }
 
 .color-inherit {
@@ -181,6 +214,15 @@ input[type="checkbox"]:checked {
   background-color: var(--secondary);
 }
 
+.fit-cover {
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
+.card {
+  transition-property: transform, box-shadow;
+  transition-duration: .2s;
+}
 .card a,
 .card button,
 .card input,
@@ -195,4 +237,12 @@ input[type="checkbox"]:checked {
   content: '';
   position: absolute;
   inset: 0;
+}
+.card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 .5rem 1rem rgba(0,0,0,0.15);
+}
+.card:focus-within {
+  transform: scale(1.02);
+  box-shadow: 0 .5rem 1rem rgba(0,0,0,0.15);
 }
