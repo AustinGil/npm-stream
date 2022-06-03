@@ -28,7 +28,7 @@ const Btn = ({
             src={thumb}
             alt={thumbAlt}
             loading="lazy"
-            className="inline-size-full block-size-full fit-cover radius-t-4"
+            className="is-full bs-full fit-cover radius-t-4"
           />
         </div>
       )}

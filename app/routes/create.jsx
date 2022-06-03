@@ -1,5 +1,9 @@
-import { redirect } from '@remix-run/node';
-import { useActionData, Link } from '@remix-run/react';
+import {
+  redirect,
+  unstable_parseMultipartFormData,
+  unstable_createFileUploadHandler,
+} from '@remix-run/node';
+import { useActionData, Link, Form } from '@remix-run/react';
 import { z } from 'zod';
 import { ulid } from 'ulid';
 import db from '../db/index.js';
@@ -15,10 +19,19 @@ export const petSchema = z.object({
 });
 
 export async function action({ request }) {
-  const formData = await request.formData();
+  const standardFileUploadHandler = unstable_createFileUploadHandler({
+    directory: 'public/uploads',
+  });
+
+  const formData = await unstable_parseMultipartFormData(
+    request,
+    standardFileUploadHandler
+  );
   const body = Object.fromEntries(formData.entries());
 
   const { error, success, data } = petSchema.safeParse(body);
+
+  console.log(data);
 
   if (!success) {
     return {
@@ -30,6 +43,15 @@ export async function action({ request }) {
     data: {
       id: ulid(),
       ...data,
+      image: {
+        create: {
+          id: ulid(),
+          size: body.photo.size,
+          url: `/uploads/${body.photo.name}`,
+          type: body.photo.type,
+          name: body.photo.name,
+        },
+      },
     },
   });
 
@@ -53,7 +75,7 @@ export default function Index() {
           ))}
         </ul>
       )}
-      <form method="POST">
+      <Form method="POST" encType="multipart/form-data">
         <Input name="name" label="Name" id="name" required />
         <Input
           name="type"
@@ -63,10 +85,13 @@ export default function Index() {
           options={['', ...petOptions]}
           required
         />
+        <Input name="birthday" label="Birthday" id="birthday" type="date" />
+
+        <Input name="photo" id="photo" label="Photo" type="file" />
 
         <Btn type="submit">Add Doggo</Btn>
         <Link to="/">Cancel</Link>
-      </form>
+      </Form>
     </div>
   );
 }

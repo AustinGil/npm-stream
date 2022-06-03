@@ -9,6 +9,7 @@ import {
 } from '@remix-run/react';
 import bedorcss from 'bedrocss/bedrocss.min.css';
 import styles from './styles/main.css';
+import SvgSymbols from './SvgSymbols.jsx';
 
 export const meta = () => ({
   charset: 'utf-8',
@@ -50,7 +51,7 @@ export default function App() {
         <Links />
       </head>
       <body className="max-is-640 m-auto">
-        <header>
+        <header className="relative z-10">
           <nav>
             <ul className="flex gap-8">
               {navLinks.map((link) => (
@@ -62,6 +63,7 @@ export default function App() {
           </nav>
         </header>
         <Outlet />
+        <SvgSymbols />
         <ScrollRestoration />
         <Scripts />
         <LiveReload />

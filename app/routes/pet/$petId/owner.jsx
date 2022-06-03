@@ -1,10 +1,11 @@
-import { redirect } from '@remix-run/node';
+import { redirect, json } from '@remix-run/node';
 import { ulid } from 'ulid';
 import db from '../../../db/index.js';
 
 export async function action({ request, params }) {
   const petId = params.petId;
   const formData = await request.formData();
+  /** @type {Array<{id: string}>} */
   const owners = formData.getAll('owner').map((ownerId) => ({ id: ownerId }));
   const newOwnerName = formData.get('new-owner-name');
 
@@ -26,8 +27,6 @@ export async function action({ request, params }) {
       data: {
         owner: {
           connect: owners,
-          // TODO: Test out
-          // connectOrCreate
         },
       },
       include: {
@@ -36,16 +35,16 @@ export async function action({ request, params }) {
     })
   );
 
-  // newOwnerName;
-  // Connect existing owners to pet
-  await db.$transaction(operations);
+  // Grab second index of operations results
+  const results = await db.$transaction(operations);
+  const data = results[1] || results[0];
 
   const accept = request.headers.get('accept');
   const secFetchMode = request.headers.get('sec-fetch-mode');
   const referer = request.headers.get('referer');
 
   if (accept.includes('application/json') || secFetchMode === 'cors') {
-    // return json(results);
+    return json(data);
   }
 
   return redirect(referer, 303);

@@ -72,7 +72,10 @@ const Input = ({
           name={name}
           type={type}
           {...attrs}
-          className={['radius-4 color-inherit bg-white', classes.input]
+          className={[
+            'is-full border radius-4 p-4 color-inherit bg-white',
+            classes.input,
+          ]
             .filter(Boolean)
             .join(' ')}
         />

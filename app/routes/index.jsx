@@ -1,4 +1,4 @@
-import { useLoaderData, Link } from '@remix-run/react';
+import { useLoaderData, Link, Form } from '@remix-run/react';
 import db from '../db/index.js';
 import { Btn, Card, Input } from '../components/index.js';
 
@@ -77,6 +77,9 @@ export const loader = async ({ request }) => {
   const params = {
     take: query.perPage,
     skip: query.page * query.perPage,
+    include: {
+      image: true,
+    },
   };
   const countParams = {};
 
@@ -132,7 +135,7 @@ export default function Index() {
   return (
     <div>
       <h1>Pets!</h1>
-      <form>
+      <Form>
         <div className="flex align-end gap-8">
           <Input
             id="search"
@@ -200,18 +203,19 @@ export default function Index() {
             />
           </div>
         </div>
-      </form>
+      </Form>
 
       {doggos.length > 0 && (
         <>
-          <ul className="grid columns-3 gap-8">
+          <ul className="grid columns-3 gap-8 mbs-16">
             {doggos.map((doggo) => (
               <li key={doggo.id}>
                 <Card
                   title={doggo.name}
                   to={`/pet/${doggo.id}`}
-                  thumb="https://placedog.net/500"
+                  thumb={doggo.image.url}
                   thumbAlt={doggo.name}
+                  className="block-size-full"
                 ></Card>
               </li>
             ))}

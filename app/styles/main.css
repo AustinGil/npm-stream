@@ -109,6 +109,15 @@ input[type="checkbox"]:checked {
 .inset-0 {
   inset: 0;
 }
+.r-0 {
+  right: 0px;
+}
+.b-0 {
+  bottom: 0px;
+}
+.z-10 {
+  z-index: 10;
+}
 .grid {
   display: grid;
   /* grid-template-columns: repeat(auto-fit, minmax(var(--grid-col-breakpoint), 1fr)); */
@@ -136,10 +145,10 @@ input[type="checkbox"]:checked {
   gap: 1rem;
 }
 
-.inline-size-full {
+.is-full {
   inline-size: 100%;
 }
-.block-size-full {
+.bs-full {
   block-size: 100%;
 }
 .max-is-640 {
@@ -152,14 +161,29 @@ input[type="checkbox"]:checked {
 .m-auto {
   margin: auto;
 }
+.mbe-8 {
+  -webkit-margin-after: .5rem;
+          margin-block-end: .5rem;
+}
+.mbs-16 {
+  -webkit-margin-before: 1rem;
+          margin-block-start: 1rem;
+}
 .mbe-16 {
-  margin-bottom: 1rem;
+  -webkit-margin-after: 1rem;
+          margin-block-end: 1rem;
 }
 .border {
   border: 1px solid;
 }
 .border-t-0 {
   border-top: 0;
+}
+.border-l-0 {
+  border-left: 0;
+}
+.border-r-0 {
+  border-right: 0;
 }
 .radius-4 {
   border-radius: .25rem;
@@ -179,18 +203,29 @@ input[type="checkbox"]:checked {
   border-top-right-radius: .5rem;
   border-top-left-radius: .5rem;
 }
-.radius-b-8 {
-  border-bottom-right-radius: .5rem;
-  border-bottom-left-radius: .5rem;
+.radius-l-0 {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.radius-r-0 {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.border-transparent {
+  border-color: transparent;
+}
+.p-4 {
+  padding: .25rem;
 }
 .p-8 {
   padding: .5rem;
 }
 .pi-12 {
-  -webkit-padding-start: .75rem;
-          padding-inline-start: .75rem;
-  -webkit-padding-end: .75rem;
-          padding-inline-end: .75rem;
+  padding-inline: .75rem;
+}
+.pie-16 {
+  -webkit-padding-end: 1rem;
+          padding-inline-end: 1rem;
 }
 
 .size-24 {
@@ -204,6 +239,9 @@ input[type="checkbox"]:checked {
   color: #fff;
 }
 
+.bg-transparent {
+  background-color: transparent;
+}
 .bg-white {
   background-color: #fff;
 }
@@ -245,4 +283,12 @@ input[type="checkbox"]:checked {
 .card:focus-within {
   transform: scale(1.02);
   box-shadow: 0 .5rem 1rem rgba(0,0,0,0.15);
+}
+.icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
 }

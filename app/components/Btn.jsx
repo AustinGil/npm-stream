@@ -5,6 +5,7 @@ import { Link } from '@remix-run/react';
  * label: string,
  * to: string,
  * type?: 'button' | 'submit',
+ * isPlain: boolean
  * }>}
  */
 const Btn = ({
@@ -12,6 +13,7 @@ const Btn = ({
   to,
   type = 'button',
   className = '',
+  isPlain,
   children,
   ...attrs
 }) => {
@@ -27,9 +29,13 @@ const Btn = ({
     attrs.type = type;
   }
 
-  attrs.className = ['radius-4 pi-12 color-white bg-primary', className]
-    .filter(Boolean)
-    .join(' ');
+  const classes = [className];
+
+  if (!isPlain) {
+    classes.push('radius-4 pi-12 color-white bg-primary');
+  }
+
+  attrs.className = classes.filter(Boolean).join(' ');
 
   return React.createElement(tag, attrs, children);
 };

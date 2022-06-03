@@ -1,8 +1,13 @@
-import { useLoaderData, useActionData, Outlet } from '@remix-run/react';
+import {
+  useLoaderData,
+  useActionData,
+  Form,
+  useFetcher,
+} from '@remix-run/react';
 import { useState } from 'react';
 import db from '../../db/index.js';
 import { petTypes, petSchema } from '../create.jsx';
-import { Btn, Input } from '../../components/index.js';
+import { Btn, Input, Svg } from '../../components/index.js';
 
 /** @type {import('@remix-run/node').LoaderFunction} */
 export const loader = async ({ params, request }) => {
@@ -31,6 +36,11 @@ export const loader = async ({ params, request }) => {
       where: {
         name: {
           contains: ownerSearch,
+        },
+        AND: {
+          id: {
+            notIn: pet.owner.map((owner) => owner.id),
+          },
         },
       },
     });
@@ -73,6 +83,7 @@ export default function Index() {
   const { data: pet, ownerSearch, personData } = useLoaderData();
   const actionData = useActionData();
   const [name, setName] = useState(pet.name);
+  const fetcher = useFetcher();
 
   function updateName(event) {
     setName(event.target.value);
@@ -81,6 +92,9 @@ export default function Index() {
     label: type.charAt(0).toUpperCase() + type.slice(1),
     value: type,
   }));
+  function resetForm(event) {
+    // event.target.reset();
+  }
 
   return (
     <>
@@ -95,13 +109,14 @@ export default function Index() {
       )}
 
       <h2 className="size-24">Details:</h2>
-      <form method="POST" className="mbe-16">
+      <Form method="POST" className="mbe-16">
         <Input
           id="name"
           name="name"
           label="Name"
           value={name}
           onChange={updateName}
+          className="mbe-8"
         />
         <Input
           id="type"
@@ -111,6 +126,7 @@ export default function Index() {
           options={['', ...petOptions]}
           defaultValue={pet.type}
           required
+          className="mbe-8"
         />
         <Input
           id="birthday"
@@ -119,18 +135,20 @@ export default function Index() {
           type="date"
           defaultValue={new Date(pet.birthday).toISOString().split('T')[0]}
           required
+          className="mbe-8"
         />
 
         <Btn type="submit">Edit Pet</Btn>
-      </form>
+      </Form>
 
       {pet.owner?.length > 0 && (
         <>
           <h2 className="size-24">Owners</h2>
-          <form
+          <fetcher.Form
             id="owner-list"
             action={`/pet/${pet.id}/owner/update`}
             method="POST"
+            className="mbe-8"
           >
             <fieldset>
               {/* <legend>Owners</legend> */}
@@ -146,7 +164,7 @@ export default function Index() {
                 />
               ))}
             </fieldset>
-          </form>
+          </fetcher.Form>
 
           <Btn form="owner-list" type="submit" className="mbe-16">
             Save Owners
@@ -154,52 +172,58 @@ export default function Index() {
         </>
       )}
 
-      {/* <Outlet context={{ data: pet, personData }} /> */}
-      <form className="flex gap-8 align-end">
+      <h2 className="size-24">Add Owners</h2>
+      <Form className="relative flex align-end mbe-8">
         <Input
           id="search"
           label="Search"
           name="owner-search"
           defaultValue={ownerSearch}
           className="flex-grow"
+          classes={{ input: 'pie-16' }}
         />
-        <Btn type="submit">Search Owners</Btn>
-      </form>
+        <Btn
+          type="submit"
+          isPlain
+          className="absolute r-0 b-0 border-transparent bg-transparent color-inherit"
+        >
+          <Svg label="Search Owners" icon="magnifying-glass" />
+        </Btn>
+      </Form>
 
-      <form action={`/pet/${pet.id}/owner`} method="POST">
-        <fieldset>
-          <legend>Owners</legend>
-          {personData.map((person) => (
-            <Input
-              key={person.id}
-              id={person.id}
-              defaultValue={person.id}
-              label={person.name}
-              name="owner"
-              type="checkbox"
-            />
-          ))}
-        </fieldset>
-        <Btn type="submit">Add Existing Owner</Btn>
-      </form>
-
-      <form
+      <fetcher.Form
         action={`/pet/${pet.id}/owner`}
         method="POST"
-        className="flex gap-8 align-end"
+        onSubmit={resetForm}
+        className="mbe-16"
       >
+        {personData?.length > 0 && (
+          <fieldset className="mbe-8">
+            <legend>Existing Owners</legend>
+            {personData.map((person) => (
+              <Input
+                key={person.id}
+                id={person.id}
+                defaultValue={person.id}
+                label={person.name}
+                name="owner"
+                type="checkbox"
+              />
+            ))}
+          </fieldset>
+        )}
         <Input
           id="new-owner-name"
-          label="Name"
+          label="New Owner Name"
           name="new-owner-name"
-          className="flex-grow"
+          className="mbe-8"
         />
-        <Btn type="submit">Add New Owner</Btn>
-      </form>
+        <Btn type="submit">Add Owner</Btn>
+      </fetcher.Form>
 
-      <form action={`/pet/${pet.id}/delete`} method="POST">
+      <Form action={`/pet/${pet.id}/delete`} method="POST">
         <Btn type="submit">Delete Pet</Btn>
-      </form>
+      </Form>
     </>
   );
 }
