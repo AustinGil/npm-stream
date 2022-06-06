@@ -1,12 +1,9 @@
-import {
-  redirect,
-  unstable_parseMultipartFormData,
-  unstable_createFileUploadHandler,
-} from '@remix-run/node';
+import { redirect, unstable_parseMultipartFormData } from '@remix-run/node';
 import { useActionData, Link, Form } from '@remix-run/react';
 import { z } from 'zod';
 import { ulid } from 'ulid';
 import db from '../db/index.js';
+import { uploadService } from '../services/index.js';
 import { Btn, Input } from '../components/index.js';
 
 export const petTypes = ['dog', 'cat', 'bird', 'reptile', 'fish', 'other'];
@@ -19,19 +16,13 @@ export const petSchema = z.object({
 });
 
 export async function action({ request }) {
-  const standardFileUploadHandler = unstable_createFileUploadHandler({
-    directory: 'public/uploads',
-  });
-
   const formData = await unstable_parseMultipartFormData(
     request,
-    standardFileUploadHandler
+    uploadService
   );
   const body = Object.fromEntries(formData.entries());
 
   const { error, success, data } = petSchema.safeParse(body);
-
-  console.log(data);
 
   if (!success) {
     return {
@@ -46,10 +37,10 @@ export async function action({ request }) {
       image: {
         create: {
           id: ulid(),
-          size: body.photo.size,
-          url: `/uploads/${body.photo.name}`,
-          type: body.photo.type,
-          name: body.photo.name,
+          size: body.image.size,
+          url: `/uploads/${body.image.name}`,
+          type: body.image.type,
+          name: body.image.name,
         },
       },
     },
@@ -87,7 +78,7 @@ export default function Index() {
         />
         <Input name="birthday" label="Birthday" id="birthday" type="date" />
 
-        <Input name="photo" id="photo" label="Photo" type="file" />
+        <Input name="image" id="image" label="Photo" type="file" />
 
         <Btn type="submit">Add Doggo</Btn>
         <Link to="/">Cancel</Link>

@@ -18,8 +18,8 @@ CREATE TABLE "Upload" (
 CREATE TABLE "Person" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL,
-    "imageId" TEXT NOT NULL,
-    CONSTRAINT "Person_imageId_fkey" FOREIGN KEY ("imageId") REFERENCES "Upload" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    "imageId" TEXT,
+    CONSTRAINT "Person_imageId_fkey" FOREIGN KEY ("imageId") REFERENCES "Upload" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -28,8 +28,8 @@ CREATE TABLE "Pet" (
     "name" TEXT NOT NULL,
     "type" TEXT NOT NULL,
     "birthday" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "imageId" TEXT NOT NULL,
-    CONSTRAINT "Pet_imageId_fkey" FOREIGN KEY ("imageId") REFERENCES "Upload" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    "imageId" TEXT,
+    CONSTRAINT "Pet_imageId_fkey" FOREIGN KEY ("imageId") REFERENCES "Upload" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- CreateTable

@@ -50,15 +50,15 @@ model Upload {
   size   Int
   type   String
   person Person?
-  per    Pet?
+  pet    Pet?
 }
 
 model Person {
   id      String      @id
   name    String
   pet     PersonOnPet[]
-  imageId String
-  image   Upload     @relation(fields: [imageId], references: [id])
+  imageId String?
+  image   Upload?     @relation(fields: [imageId], references: [id])
 }
 
 model Pet {
@@ -67,8 +67,8 @@ model Pet {
   type    String
   birthday DateTime   @default(now())
   owner   PersonOnPet[]
-  imageId String
-  image   Upload     @relation(fields: [imageId], references: [id])
+  imageId String?
+  image   Upload?     @relation(fields: [imageId], references: [id])
 }
 
 model PersonOnPet {

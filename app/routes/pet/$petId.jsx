@@ -1,3 +1,4 @@
+import { unstable_parseMultipartFormData } from '@remix-run/node';
 import {
   useLoaderData,
   useActionData,
@@ -5,7 +6,9 @@ import {
   useFetcher,
 } from '@remix-run/react';
 import { useState } from 'react';
+import { ulid } from 'ulid';
 import db from '../../db/index.js';
+import { uploadService } from '../../services/index.js';
 import { petTypes, petSchema } from '../create.jsx';
 import { Btn, Input, Svg } from '../../components/index.js';
 
@@ -21,6 +24,7 @@ export const loader = async ({ params, request }) => {
     },
     include: {
       owner: true,
+      image: true,
     },
   });
   if (!pet) {
@@ -30,21 +34,32 @@ export const loader = async ({ params, request }) => {
   }
 
   let ownerSearch = searchParams.get('owner-search') ?? '';
-  let personData = [];
-  if (ownerSearch) {
-    personData = await db.person.findMany({
-      where: {
-        name: {
-          contains: ownerSearch,
-        },
-        AND: {
-          id: {
-            notIn: pet.owner.map((owner) => owner.id),
-          },
-        },
+  /** @type {import('@prisma/client').Prisma.PersonFindManyArgs} */
+  let personSearchParams = {
+    where: {
+      id: {
+        notIn: pet.owner.map((owner) => owner.id),
       },
-    });
+    },
+  };
+  if (ownerSearch) {
+    personSearchParams.where.AND = {
+      name: {
+        contains: ownerSearch,
+      },
+    };
+    // personSearchParams.where = {
+    //   name: {
+    //     contains: ownerSearch,
+    //   },
+    //   AND: {
+    //     id: {
+    //       notIn: pet.owner.map((owner) => owner.id),
+    //     },
+    //   },
+    // };
   }
+  const personData = await db.person.findMany(personSearchParams);
 
   return {
     data: pet,
@@ -55,7 +70,10 @@ export const loader = async ({ params, request }) => {
 
 export async function action({ params, request }) {
   const id = params.petId;
-  const formData = await request.formData();
+  const formData = await unstable_parseMultipartFormData(
+    request,
+    uploadService
+  );
   const body = Object.fromEntries(formData.entries());
 
   const { error, success, data } = petSchema.safeParse(body);
@@ -63,6 +81,18 @@ export async function action({ params, request }) {
   if (!success) {
     return {
       errors: error.issues.map((issue) => issue.message),
+    };
+  }
+
+  if (body.image) {
+    data.image = {
+      create: {
+        id: ulid(),
+        size: body.image.size,
+        url: `/uploads/${body.image.name}`,
+        type: body.image.type,
+        name: body.image.name,
+      },
     };
   }
 
@@ -108,8 +138,14 @@ export default function Index() {
         </ul>
       )}
 
+      <div className="flex justify-center bs-256">
+        {(pet.image && pet.image.url && (
+          <img src={pet.image.url} alt={pet.name} className="is-256" />
+        )) || <Svg label="Avatar" icon="paw-print" className="size-256" />}
+      </div>
+
       <h2 className="size-24">Details:</h2>
-      <Form method="POST" className="mbe-16">
+      <Form method="POST" encType="multipart/form-data" className="mbe-16">
         <Input
           id="name"
           name="name"
@@ -135,6 +171,13 @@ export default function Index() {
           type="date"
           defaultValue={new Date(pet.birthday).toISOString().split('T')[0]}
           required
+          className="mbe-8"
+        />
+        <Input
+          id="image"
+          name="image"
+          label="Photo"
+          type="file"
           className="mbe-8"
         />
 

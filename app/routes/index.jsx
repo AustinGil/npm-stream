@@ -213,7 +213,7 @@ export default function Index() {
                 <Card
                   title={doggo.name}
                   to={`/pet/${doggo.id}`}
-                  thumb={doggo.image.url}
+                  thumb={doggo.image?.url ?? ''}
                   thumbAlt={doggo.name}
                   className="block-size-full"
                 ></Card>
