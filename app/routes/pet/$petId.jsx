@@ -23,7 +23,7 @@ export const loader = async ({ params, request }) => {
       id: id,
     },
     include: {
-      owner: true,
+      owners: true,
       image: true,
     },
   });
@@ -38,9 +38,10 @@ export const loader = async ({ params, request }) => {
   let personSearchParams = {
     where: {
       id: {
-        notIn: pet.owner.map((owner) => owner.id),
+        notIn: pet.owners.map((owner) => owner.id),
       },
     },
+    take: 12,
   };
   if (ownerSearch) {
     personSearchParams.where.AND = {
@@ -184,7 +185,7 @@ export default function Index() {
         <Btn type="submit">Edit Pet</Btn>
       </Form>
 
-      {pet.owner?.length > 0 && (
+      {pet.owners?.length > 0 && (
         <>
           <h2 className="size-24">Owners</h2>
           <fetcher.Form
@@ -195,7 +196,7 @@ export default function Index() {
           >
             <fieldset>
               {/* <legend>Owners</legend> */}
-              {pet.owner.map((owner) => (
+              {pet.owners.map((owner) => (
                 <Input
                   key={owner.id}
                   id={owner.id}

@@ -2,7 +2,7 @@ import { useLoaderData, Link, Form } from '@remix-run/react';
 import db from '../db/index.js';
 import { Btn, Card, Input } from '../components/index.js';
 
-const DEFAULT_PER_PAGE = 10;
+const DEFAULT_PER_PAGE = 12;
 
 /**
  * @param {URLSearchParams} searchParams

@@ -4,18 +4,19 @@ import db from '../../../../db/index.js';
 export async function action({ request, params }) {
   const petId = params.petId;
   const formData = await request.formData();
-  const owners = formData.getAll('owner').map((ownerId) => ({ id: ownerId }));
+  const ownerIds = formData.getAll('owner');
 
-  // Connect existing owners to pet
   const results = await db.pet.update({
     where: { id: petId },
     data: {
-      owner: {
-        set: owners,
+      owners: {
+        set: ownerIds.map((ownerId) => ({
+          id: ownerId,
+        })),
       },
     },
     include: {
-      owner: true,
+      owners: true,
     },
   });
 

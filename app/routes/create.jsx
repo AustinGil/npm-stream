@@ -6,7 +6,15 @@ import db from '../db/index.js';
 import { uploadService } from '../services/index.js';
 import { Btn, Input } from '../components/index.js';
 
-export const petTypes = ['dog', 'cat', 'bird', 'reptile', 'fish', 'other'];
+export const petTypes = [
+  'dog',
+  'cat',
+  'bird',
+  'reptile',
+  'fish',
+  'bunny',
+  'other',
+];
 
 export const petSchema = z.object({
   name: z.string().min(1),

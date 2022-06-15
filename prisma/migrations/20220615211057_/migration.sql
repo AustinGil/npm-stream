@@ -33,13 +33,11 @@ CREATE TABLE "Pet" (
 );
 
 -- CreateTable
-CREATE TABLE "PersonOnPet" (
-    "personId" TEXT NOT NULL,
-    "petId" TEXT NOT NULL,
-
-    PRIMARY KEY ("personId", "petId"),
-    CONSTRAINT "PersonOnPet_personId_fkey" FOREIGN KEY ("personId") REFERENCES "Person" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
-    CONSTRAINT "PersonOnPet_petId_fkey" FOREIGN KEY ("petId") REFERENCES "Pet" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+CREATE TABLE "_PersonToPet" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL,
+    CONSTRAINT "_PersonToPet_A_fkey" FOREIGN KEY ("A") REFERENCES "Person" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "_PersonToPet_B_fkey" FOREIGN KEY ("B") REFERENCES "Pet" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateIndex
@@ -50,3 +48,9 @@ CREATE UNIQUE INDEX "Person_imageId_key" ON "Person"("imageId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Pet_imageId_key" ON "Pet"("imageId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_PersonToPet_AB_unique" ON "_PersonToPet"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_PersonToPet_B_index" ON "_PersonToPet"("B");

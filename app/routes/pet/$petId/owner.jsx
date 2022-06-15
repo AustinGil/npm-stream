@@ -5,8 +5,7 @@ import db from '../../../db/index.js';
 export async function action({ request, params }) {
   const petId = params.petId;
   const formData = await request.formData();
-  /** @type {Array<{id: string}>} */
-  const owners = formData.getAll('owner').map((ownerId) => ({ id: ownerId }));
+  const ownerIds = formData.getAll('owner');
   const newOwnerName = formData.get('new-owner-name');
 
   const operations = [];
@@ -18,19 +17,20 @@ export async function action({ request, params }) {
         data: newPerson,
       })
     );
-    owners.push({ id: newPerson.id });
   }
 
   operations.push(
     db.pet.update({
       where: { id: petId },
       data: {
-        owner: {
-          connect: owners,
+        owners: {
+          connect: ownerIds.map((ownerId) => ({
+            id: ownerId,
+          })),
         },
       },
       include: {
-        owner: true,
+        owners: true,
       },
     })
   );

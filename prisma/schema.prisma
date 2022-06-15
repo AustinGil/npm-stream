@@ -56,7 +56,8 @@ model Upload {
 model Person {
   id      String      @id
   name    String
-  pet     PersonOnPet[]
+  pets    Pet[]
+  // pets   PersonOnPet[]
   imageId String?
   image   Upload?     @relation(fields: [imageId], references: [id])
 }
@@ -66,16 +67,18 @@ model Pet {
   name    String
   type    String
   birthday DateTime   @default(now())
-  owner   PersonOnPet[]
+  owners   Person[]
+  // owners   PersonOnPet[]
   imageId String?
   image   Upload?     @relation(fields: [imageId], references: [id])
 }
 
-model PersonOnPet {
-  owner       Person     @relation(fields: [personId], references: [id])
-  personId    String // relation scalar field (used in the `@relation` attribute above)
-  pet         Pet @relation(fields: [petId], references: [id])
-  petId       String // relation scalar field (used in the `@relation` attribute above)
+// model PersonOnPet {
+//   // id          Int        @id @default(autoincrement())
+//   person      Person     @relation(fields: [personId], references: [id])
+//   personId    String // relation scalar field (used in the `@relation` attribute above)
+//   pet         Pet        @relation(fields: [petId], references: [id])
+//   petId       String // relation scalar field (used in the `@relation` attribute above)
 
-  @@id([personId, petId])
-}
+//   @@id([personId, petId])
+// }
