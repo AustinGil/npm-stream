@@ -15,6 +15,7 @@ const Input = ({
   classes = {},
   type = 'text',
   options = [],
+  errors = [],
   ...attrs
 }) => {
   if (!label) console.warn('Input is missing a label');
@@ -36,10 +37,30 @@ const Input = ({
     return option;
   });
 
-  id = id ? id : `id-${randomString(6)}`;
+  const ariaDescribedby = [];
+  if (attrs['aria-describedby']) {
+    ariaDescribedby.push(attrs['aria-describedby']);
+  }
+  if (errors.length > 0) {
+    ariaDescribedby.push(`${id}__error`);
+  }
+
+  const sharedAttrs = {
+    id: id ? id : `id-${randomString(6)}`,
+    name: name,
+  };
+  if (ariaDescribedby.length) {
+    sharedAttrs['aria-describedby'] = ariaDescribedby.join(' ');
+  }
+
   return (
     <div
-      className={['app-input', className, classes.root]
+      className={[
+        'app-input',
+        errors.length && 'app-input--error',
+        className,
+        classes.root,
+      ]
         .filter(Boolean)
         .join(' ')}
     >
@@ -51,8 +72,7 @@ const Input = ({
 
       {type === 'select' && (
         <select
-          id={id}
-          name={name}
+          {...sharedAttrs}
           {...attrs}
           className={['radius-4 color-inherit bg-white', classes.input]
             .filter(Boolean)
@@ -68,8 +88,7 @@ const Input = ({
 
       {type !== 'select' && (
         <input
-          id={id}
-          name={name}
+          {...sharedAttrs}
           type={type}
           {...attrs}
           className={[
@@ -85,6 +104,14 @@ const Input = ({
         <label htmlFor={id} className={classes.label}>
           {label}
         </label>
+      )}
+
+      {errors.length > 0 && (
+        <ul id={`${id}__error`} className="app-input__error flex color-error">
+          {errors.map((error) => (
+            <li key={error}>{error}.&nbsp;</li>
+          ))}
+        </ul>
       )}
     </div>
   );

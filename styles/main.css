@@ -247,6 +247,9 @@ input[type="checkbox"]:checked {
 .color-white {
   color: #fff;
 }
+.color-error {
+  color: var(--red-30);
+}
 
 .bg-transparent {
   background-color: transparent;

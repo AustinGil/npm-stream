@@ -17,6 +17,7 @@ export async function action({ request, params }) {
         data: newPerson,
       })
     );
+    ownerIds.push(newPerson.id);
   }
 
   operations.push(

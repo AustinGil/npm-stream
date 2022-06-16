@@ -49,16 +49,6 @@ export const loader = async ({ params, request }) => {
         contains: ownerSearch,
       },
     };
-    // personSearchParams.where = {
-    //   name: {
-    //     contains: ownerSearch,
-    //   },
-    //   AND: {
-    //     id: {
-    //       notIn: pet.owner.map((owner) => owner.id),
-    //     },
-    //   },
-    // };
   }
   const personData = await db.person.findMany(personSearchParams);
 
@@ -71,6 +61,7 @@ export const loader = async ({ params, request }) => {
 
 export async function action({ params, request }) {
   const id = params.petId;
+  console.log(request);
   const formData = await unstable_parseMultipartFormData(
     request,
     uploadService
@@ -80,8 +71,16 @@ export async function action({ params, request }) {
   const { error, success, data } = petSchema.safeParse(body);
 
   if (!success) {
+    const errors = {};
+    for (const issue of error.issues || []) {
+      const key = issue.path[0];
+      if (!errors[key]) {
+        errors[key] = [];
+      }
+      errors[key].push(issue.message);
+    }
     return {
-      errors: error.issues.map((issue) => issue.message),
+      errors: errors,
     };
   }
 
@@ -131,14 +130,6 @@ export default function Index() {
     <>
       <h1>{name || pet.name}</h1>
 
-      {actionData?.errors?.length && (
-        <ul>
-          {actionData.errors.map((error) => (
-            <li key={error}>{error}</li>
-          ))}
-        </ul>
-      )}
-
       <div className="flex justify-center bs-256">
         {(pet.image && pet.image.url && (
           <img src={pet.image.url} alt={pet.name} className="is-256" />
@@ -154,6 +145,7 @@ export default function Index() {
           value={name}
           onChange={updateName}
           className="mbe-8"
+          errors={actionData?.errors?.name}
         />
         <Input
           id="type"
