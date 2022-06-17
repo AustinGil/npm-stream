@@ -2,8 +2,7 @@ import { redirect, unstable_parseMultipartFormData } from '@remix-run/node';
 import { useActionData, Link, Form } from '@remix-run/react';
 import { z } from 'zod';
 import { ulid } from 'ulid';
-import db from '../db/index.js';
-import { uploadService } from '../services/index.js';
+import { db, uploadService } from '../services/index.js';
 import { Btn, Input } from '../components/index.js';
 
 export const petTypes = [
@@ -19,7 +18,10 @@ export const petTypes = [
 export const petSchema = z.object({
   name: z.string().min(1),
   type: z.enum(petTypes),
-  birthday: z.preprocess((v) => new Date(v || Date.now()), z.date().optional()),
+  birthday: z.preprocess(
+    (v) => (v ? new Date(v) : undefined),
+    z.date().optional()
+  ),
   // owner: TODO person ID
 });
 
@@ -38,20 +40,22 @@ export async function action({ request }) {
     };
   }
 
-  await db.pet.create({
-    data: {
-      id: ulid(),
-      ...data,
-      image: {
-        create: {
-          id: ulid(),
-          size: body.image.size,
-          url: `/uploads/${body.image.name}`,
-          type: body.image.type,
-          name: body.image.name,
-        },
+  data.id = ulid();
+
+  if (body.image) {
+    data.image = {
+      create: {
+        id: ulid(),
+        size: body.image.size,
+        url: `/uploads/${body.image.name}`,
+        type: body.image.type,
+        name: body.image.name,
       },
-    },
+    };
+  }
+
+  await db.pet.create({
+    data: data,
   });
 
   return redirect('/');

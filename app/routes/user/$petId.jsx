@@ -1,6 +1,6 @@
 import { useLoaderData, useActionData } from '@remix-run/react';
 import { useState } from 'react';
-import db from '../../db/index.js';
+import { db } from '../../services/index.js';
 import { petTypes, petSchema } from '../create.jsx';
 import { Btn, Input } from '../../components/index.js';
 

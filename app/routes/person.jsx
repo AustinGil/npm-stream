@@ -2,7 +2,7 @@ import { redirect, json } from '@remix-run/node';
 import { useLoaderData, useActionData, Link } from '@remix-run/react';
 import { z } from 'zod';
 import { ulid } from 'ulid';
-import db from '../db/index.js';
+import { db } from '../services/index.js';
 import { Btn, Input } from '../components/index.js';
 
 export const loader = async () => {

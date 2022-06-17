@@ -1,6 +1,6 @@
 import { redirect, json } from '@remix-run/node';
 import { ulid } from 'ulid';
-import db from '../../../db/index.js';
+import { db } from '../../../services/index.js';
 
 export async function action({ request, params }) {
   const petId = params.petId;

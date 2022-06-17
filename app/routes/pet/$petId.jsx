@@ -7,8 +7,7 @@ import {
 } from '@remix-run/react';
 import { useState } from 'react';
 import { ulid } from 'ulid';
-import db from '../../db/index.js';
-import { uploadService } from '../../services/index.js';
+import { db, uploadService } from '../../services/index.js';
 import { petTypes, petSchema } from '../create.jsx';
 import { Btn, Input, Svg } from '../../components/index.js';
 
@@ -61,7 +60,6 @@ export const loader = async ({ params, request }) => {
 
 export async function action({ params, request }) {
   const id = params.petId;
-  console.log(request);
   const formData = await unstable_parseMultipartFormData(
     request,
     uploadService

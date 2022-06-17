@@ -1,103 +1,37 @@
 import { useLoaderData, Link, Form } from '@remix-run/react';
-import db from '../db/index.js';
-import { Btn, Card, Input } from '../components/index.js';
-
-const DEFAULT_PER_PAGE = 12;
-
-/**
- * @param {URLSearchParams} searchParams
- * @param {{
- * allowedColumns: string[]
- * }} [options={}]
- * @return {Record<string, any> & {
- * page: number,
- * perPage: number
- * }}
- */
-function searchParamsToQuery(searchParams, options = {}) {
-  const query = {};
-  /**
-   * Grabs the different parts from sort query params `sortBy[0]col` & `sortBy[0]dir`
-   * @see https://regex101.com/r/Aqvy8J/1
-   */
-  const sortKeyRegex = /(?<param>\w+)\[(?<index>\d+)\](?<sortKey>\w+)/;
-  for (let [key, value] of searchParams) {
-    let index;
-    if (sortKeyRegex.test(key)) {
-      const groups = sortKeyRegex.exec(key)?.groups;
-      const allowedColumns = options.allowedColumns || [];
-
-      if (
-        !allowedColumns.length ||
-        (groups.sortKey === 'col' && !allowedColumns.includes(value))
-      ) {
-        continue;
-      }
-      key = groups.param;
-
-      if (!Array.isArray(query[key])) {
-        query[key] = [];
-      }
-
-      index = Number(groups.index);
-      const item = query[key][index] || {};
-
-      item[groups.sortKey] = value;
-      query[key][index] = item;
-      continue;
-    }
-
-    if (query[key] === undefined) {
-      query[key] = value;
-      continue;
-    }
-    if (Array.isArray(query[key])) {
-      query[key].push(value);
-      continue;
-    }
-    query[key] = [query[key], value];
-  }
-  query.perPage = query.perPage ? parseInt(query.perPage) : DEFAULT_PER_PAGE;
-  query.perPage = Math.max(query.perPage, 1);
-  query.page = query.page ? parseInt(query.page) - 1 : 0;
-  query.page = Math.max(query.page, 0);
-  return query;
-}
+import { searchParamsToQuery } from '../utils.js';
+import { db } from '../services/index.js';
+import { Btn, Card, Input, Pagination } from '../components/index.js';
 
 /** @type {import('@remix-run/node').LoaderFunction} */
 export const loader = async ({ request }) => {
   const url = new URL(request.url);
-  const searchParams = url.searchParams;
-
-  const query = searchParamsToQuery(searchParams, {
-    allowedColumns: ['id', 'name'],
-  });
+  const query = searchParamsToQuery(url.searchParams);
 
   /** @type {import('@prisma/client').Prisma.PetFindManyArgs} */
   const params = {
     take: query.perPage,
-    skip: query.page * query.perPage,
+    skip: (query.page - 1) * query.perPage,
     include: {
       image: true,
     },
+    orderBy: [{ id: 'desc' }],
   };
   const countParams = {};
 
-  if (searchParams.has('search')) {
+  if (query.name?.contains != null) {
     params.where = {
-      name: {
-        contains: searchParams.get('search').trim(),
-      },
+      name: query.name,
     };
     countParams.where = params.where;
   }
   if (query.sortBy?.length) {
     params.orderBy = [];
-    for (const item of query.sortBy) {
-      const sortBy = item.col?.trim();
-      const direction = item.dir?.trim() || 'asc';
+    for (let i = 0; i < query.sortBy.length; i++) {
+      const sortBy = query.sortBy[i];
+      const sortDir = query.sortDir[i] || 'asc';
       if (sortBy) {
-        params.orderBy.push({ [sortBy]: direction });
+        params.orderBy.push({ [sortBy]: sortDir });
       }
     }
   }
@@ -107,7 +41,7 @@ export const loader = async ({ request }) => {
     db.pet.count(countParams),
   ]);
   return {
-    query: params,
+    query: query,
     data: {
       items: items,
       count: count,
@@ -119,18 +53,6 @@ export default function Index() {
   /** @type {Awaited<ReturnType<typeof loader>>} */
   const { data, query } = useLoaderData();
   const doggos = data.items;
-  // const searchParams = new URLSearchParams(query)
-  const currentPage = query.page + 1;
-  const perPage = query.perPage;
-  const previousParams = new URLSearchParams({
-    ...query,
-    page: currentPage - 1,
-  });
-  const nextParams = new URLSearchParams({
-    ...query,
-    page: currentPage + 1,
-  });
-  const lastPage = Math.ceil(data.count / perPage);
 
   return (
     <div>
@@ -140,8 +62,8 @@ export default function Index() {
           <Input
             id="search"
             label="Search"
-            name="search"
-            defaultValue={query.where?.name?.contains ?? ''}
+            name="name[contains]"
+            defaultValue={query.name?.contains ?? ''}
             className="flex-grow"
           />
           <Btn type="submit">Search</Btn>
@@ -152,25 +74,17 @@ export default function Index() {
             <Input
               id="sort-by-name"
               label="Sort by name"
-              name="sortBy[0]col"
+              name="sortBy[0]"
               type="checkbox"
               defaultValue="name"
-              defaultChecked={query.orderBy?.find((item) =>
-                Object.prototype.hasOwnProperty.call(item, 'name')
-              )}
+              defaultChecked={query.sortBy[0] === 'name'}
             />
             <Input
               id="sort-dir-name"
               label="Sort direction"
-              name="sortBy[0]dir"
+              name="sortDir[0]"
               type="select"
-              defaultValue={query.orderBy?.reduce((dir, item, index, arr) => {
-                if (dir) return dir;
-                if (Object.prototype.hasOwnProperty.call(item, 'name')) {
-                  return (item && item.name) || 'asc';
-                }
-                return index === arr.length - 1 ? 'asc' : dir;
-              }, '')}
+              defaultValue={query.sortDir[0]}
               options={['asc', 'desc']}
               classes={{ label: 'visually-hidden' }}
             />
@@ -179,25 +93,17 @@ export default function Index() {
             <Input
               id="sort-by-id"
               label="Sort by ID"
-              name="sortBy[1]col"
+              name="sortBy[1]"
               type="checkbox"
               defaultValue="id"
-              defaultChecked={query.orderBy?.find((item) =>
-                Object.prototype.hasOwnProperty.call(item, 'id')
-              )}
+              defaultChecked={query.sortBy[1] === 'id'}
             />
             <Input
               id="sort-dir-id"
               label="Sort direction"
-              name="sortBy[1]dir"
+              name="sortDir[1]"
               type="select"
-              defaultValue={query.orderBy?.reduce((dir, item, index, arr) => {
-                if (dir) return dir;
-                if (Object.prototype.hasOwnProperty.call(item, 'id')) {
-                  return (item && item.id) || 'asc';
-                }
-                return index === arr.length - 1 ? 'asc' : dir;
-              }, '')}
+              defaultValue={query.sortDir[1]}
               options={['asc', 'desc']}
               classes={{ label: 'visually-hidden' }}
             />
@@ -221,18 +127,10 @@ export default function Index() {
             ))}
           </ul>
 
-          {JSON.stringify(query)}
-
-          <nav>
-            {currentPage > 1 && (
-              <Link to={`/?${previousParams.toString()}`}>Previous Page</Link>
-            )}
-            {currentPage < lastPage && (
-              <Link to={`/?${nextParams.toString()}`}>Next Page</Link>
-            )}
-          </nav>
+          <Pagination query={query} total={data.count} />
         </>
       )}
+      {JSON.stringify(query, null, 2)}
     </div>
   );
 }
