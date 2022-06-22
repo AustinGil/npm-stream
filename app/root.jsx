@@ -9,6 +9,7 @@ import {
 } from '@remix-run/react';
 import bedorcss from 'bedrocss/bedrocss.min.css';
 import styles from './styles/main.css';
+import styles2 from '../build/styles/app.css';
 import SvgSymbols from './SvgSymbols.jsx';
 
 export const meta = () => ({
@@ -22,6 +23,7 @@ export const links = () => {
   return [
     { rel: 'stylesheet', href: bedorcss },
     { rel: 'stylesheet', href: styles },
+    { rel: 'stylesheet', href: styles2 },
   ];
 };
 
@@ -62,7 +64,9 @@ export default function App() {
             </ul>
           </nav>
         </header>
-        <Outlet />
+        <div className="pbe-16">
+          <Outlet />
+        </div>
         <SvgSymbols />
         <ScrollRestoration />
         <Scripts />

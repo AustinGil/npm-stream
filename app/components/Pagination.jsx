@@ -16,10 +16,10 @@ const Pagination = ({ query, total, className = '', ...attrs }) => {
 
   const queryParams = new URLSearchParams(qs.stringify(query));
 
-  const previousParams = new URLSearchParams(queryParams);
-  previousParams.set('page', page - 1);
-  const nextParams = new URLSearchParams(queryParams);
-  nextParams.set('page', page + 1);
+  queryParams.set('page', page - 1);
+  const previousUrl = queryParams.toString();
+  queryParams.set('page', page + 1);
+  const nextUrl = queryParams.toString();
   const lastPage = Math.ceil(total / perPage);
 
   return (
@@ -28,14 +28,10 @@ const Pagination = ({ query, total, className = '', ...attrs }) => {
       {...attrs}
     >
       {page <= 1 && <span>Previous Page</span>}
-      {page > 1 && (
-        <Link to={`/?${previousParams.toString()}`}>Previous Page</Link>
-      )}
+      {page > 1 && <Link to={`?${previousUrl}`}>Previous Page</Link>}
 
       {page >= lastPage && <span>Next Page</span>}
-      {page < lastPage && (
-        <Link to={`/?${nextParams.toString()}`}>Next Page</Link>
-      )}
+      {page < lastPage && <Link to={`?${nextUrl}`}>Next Page</Link>}
     </nav>
   );
 };

@@ -16,6 +16,15 @@ async function main() {
             {
               id: ulid(),
               name: faker.name.firstName(),
+              image: {
+                create: {
+                  id: ulid(),
+                  name: faker.system.fileName(),
+                  size: 0,
+                  type: 'jpeg',
+                  url: 'https://placeimg.com/640/480/people',
+                },
+              },
             },
           ],
         },

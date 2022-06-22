@@ -1,13 +1,13 @@
-import { useLoaderData, useActionData } from '@remix-run/react';
+import { useLoaderData, useActionData, Form } from '@remix-run/react';
 import { useState } from 'react';
 import { db } from '../../services/index.js';
 import { petTypes, petSchema } from '../create.jsx';
-import { Btn, Input } from '../../components/index.js';
+import { Btn, Input, Dialog } from '../../components/index.js';
 
 export const loader = async ({ params }) => {
-  const id = params.petId;
+  const id = params.personId;
   return {
-    data: await db.pet.findFirst({
+    data: await db.person.findFirst({
       where: {
         id: id,
       },
@@ -16,7 +16,7 @@ export const loader = async ({ params }) => {
 };
 
 export async function action({ params, request }) {
-  const id = params.petId;
+  const id = params.personId;
   const formData = await request.formData();
   const body = Object.fromEntries(formData.entries());
 
@@ -42,30 +42,18 @@ export async function action({ params, request }) {
 
 export default function Index() {
   /** @type {Awaited<ReturnType<typeof loader>>} */
-  const { data: pet } = useLoaderData();
-  const actionData = useActionData();
-  const [name, setName] = useState(pet.name);
+  const { data: person } = useLoaderData();
+  // const actionData = useActionData();
+  const [name, setName] = useState(person.name);
 
   function updateName(event) {
     setName(event.target.value);
   }
-  const petOptions = petTypes.map((type) => ({
-    label: type.charAt(0).toUpperCase() + type.slice(1),
-    value: type,
-  }));
 
   return (
     <div>
-      <h1>{name || pet.name}</h1>
-
-      {actionData?.errors?.length && (
-        <ul>
-          {actionData.errors.map((error) => (
-            <li key={error}>{error}</li>
-          ))}
-        </ul>
-      )}
-      <form method="POST">
+      <h1>{name || person.name}</h1>
+      <Form method="POST" className="grid gap-8 mbe-16">
         <Input
           id="name"
           name="name"
@@ -73,22 +61,27 @@ export default function Index() {
           value={name}
           onChange={updateName}
         />
-        <Input
-          name="type"
-          label="Type"
-          id="type"
-          type="select"
-          options={['', ...petOptions]}
-          defaultValue={pet.type}
-          required
-        />
 
-        <Btn type="submit">Edit Pet</Btn>
-      </form>
+        <div>
+          <Btn type="submit">Edit</Btn>
+        </div>
+      </Form>
 
-      <form action={`/pet/${pet.id}/delete`} method="POST">
-        <Btn type="submit">Delete Pet</Btn>
-      </form>
+      <Dialog
+        toggle={
+          <>
+            <span className="inline-block radius-4 pi-12 pb-4 color-white bg-primary">
+              Delete
+            </span>
+          </>
+        }
+      >
+        Dialog content plz
+      </Dialog>
+
+      <Form action={`/person/${person.id}/delete`} method="POST">
+        <Btn type="submit">Delete</Btn>
+      </Form>
     </div>
   );
 }

@@ -135,14 +135,17 @@ export default function Index() {
       </div>
 
       <h2 className="size-24">Details:</h2>
-      <Form method="POST" encType="multipart/form-data" className="mbe-16">
+      <Form
+        method="POST"
+        encType="multipart/form-data"
+        className="grid gap-8 mbe-16"
+      >
         <Input
           id="name"
           name="name"
           label="Name"
           value={name}
           onChange={updateName}
-          className="mbe-8"
           errors={actionData?.errors?.name}
         />
         <Input
@@ -153,7 +156,6 @@ export default function Index() {
           options={['', ...petOptions]}
           defaultValue={pet.type}
           required
-          className="mbe-8"
         />
         <Input
           id="birthday"
@@ -162,17 +164,12 @@ export default function Index() {
           type="date"
           defaultValue={new Date(pet.birthday).toISOString().split('T')[0]}
           required
-          className="mbe-8"
         />
-        <Input
-          id="image"
-          name="image"
-          label="Photo"
-          type="file"
-          className="mbe-8"
-        />
+        <Input id="image" name="image" label="Photo" type="file" />
 
-        <Btn type="submit">Edit Pet</Btn>
+        <div>
+          <Btn type="submit">Edit Pet</Btn>
+        </div>
       </Form>
 
       {pet.owners?.length > 0 && (

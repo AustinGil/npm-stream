@@ -1,14 +1,16 @@
-import { useLoaderData, Link, Form } from '@remix-run/react';
-import { searchParamsToQuery } from '../utils.js';
-import { db } from '../services/index.js';
-import { Btn, Card, Input, Pagination } from '../components/index.js';
+import { redirect, json } from '@remix-run/node';
+import { useLoaderData, useActionData, Form } from '@remix-run/react';
+import { z } from 'zod';
+import { ulid } from 'ulid';
+import { searchParamsToQuery } from '../../utils.js';
+import { db } from '../../services/index.js';
+import { Btn, Input, Card, Pagination } from '../../components/index.js';
 
-/** @type {import('@remix-run/node').LoaderFunction} */
 export const loader = async ({ request }) => {
   const url = new URL(request.url);
   const query = searchParamsToQuery(url.searchParams);
 
-  /** @type {import('@prisma/client').Prisma.PetFindManyArgs} */
+  /** @type {import('@prisma/client').Prisma.PersonFindManyArgs} */
   const params = {
     take: query.perPage,
     skip: (query.page - 1) * query.perPage,
@@ -37,8 +39,8 @@ export const loader = async ({ request }) => {
   }
 
   const [items, count] = await Promise.all([
-    db.pet.findMany(params),
-    db.pet.count(countParams),
+    db.person.findMany(params),
+    db.person.count(countParams),
   ]);
   return {
     query: query,
@@ -49,14 +51,52 @@ export const loader = async ({ request }) => {
   };
 };
 
+export const personSchema = z.object({
+  name: z.string().min(1),
+});
+
+/** @type {import('@remix-run/node').ActionFunction} */
+export async function action({ request }) {
+  const formData = await request.formData();
+  if (!formData) return redirect('/');
+
+  const body = Object.fromEntries(formData.entries());
+
+  const { error, success, data } = personSchema.safeParse(body);
+
+  if (!success) {
+    return {
+      errors: error.issues.map((issue) => issue.message),
+    };
+  }
+
+  const results = await db.person.create({
+    data: {
+      id: ulid(),
+      ...data,
+    },
+  });
+
+  const accept = request.headers.get('accept');
+  const secFetchMode = request.headers.get('sec-fetch-mode');
+  const referer = request.headers.get('referer');
+
+  if (accept.includes('application/json') || secFetchMode === 'cors') {
+    return json(results);
+  }
+
+  return redirect(referer, 303);
+}
+
 export default function Index() {
   /** @type {Awaited<ReturnType<typeof loader>>} */
   const { data, query } = useLoaderData();
-  const doggos = data.items;
-
+  const peeps = data.items;
+  // const actionData = useActionData();
   return (
     <div>
-      <h1>Pets!</h1>
+      <h1>Peeps!</h1>
+
       <Form>
         <div className="flex align-end gap-8">
           <Input
@@ -111,16 +151,16 @@ export default function Index() {
         </div>
       </Form>
 
-      {doggos.length > 0 && (
+      {peeps.length > 0 && (
         <>
           <ul className="grid columns-3 gap-8 mbs-16">
-            {doggos.map((doggo) => (
-              <li key={doggo.id}>
+            {peeps.map((person) => (
+              <li key={person.id}>
                 <Card
-                  title={doggo.name}
-                  to={`/pet/${doggo.id}`}
-                  thumb={doggo.image?.url ?? ''}
-                  thumbAlt={doggo.name}
+                  title={person.name}
+                  to={`/person/${person.id}`}
+                  thumb={person.image?.url ?? ''}
+                  thumbAlt={person.name}
                   className="block-size-full"
                 ></Card>
               </li>
@@ -130,7 +170,28 @@ export default function Index() {
           <Pagination query={query} total={data.count} className="mbs-16" />
         </>
       )}
-      {JSON.stringify(query, null, 2)}
+
+      {/* {actionData?.errors?.length && (
+        <ul>
+          {actionData.errors.map((error) => (
+            <li key={error}>{error}</li>
+          ))}
+        </ul>
+      )} */}
+      {/* <form method="POST">
+        <Input name="name" label="Name" id="name" required />
+        <Input
+          name="type"
+          label="Type"
+          id="type"
+          type="select"
+          options={['', ...petOptions]}
+          required
+        />
+
+        <Btn type="submit">Add Doggo</Btn>
+        <Link to="/">Cancel</Link>
+      </form> */}
     </div>
   );
 }

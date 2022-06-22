@@ -78,7 +78,7 @@ export default function Index() {
           ))}
         </ul>
       )}
-      <Form method="POST" encType="multipart/form-data">
+      <Form method="POST" encType="multipart/form-data" className="grid gap-8">
         <Input name="name" label="Name" id="name" required />
         <Input
           name="type"
@@ -92,8 +92,10 @@ export default function Index() {
 
         <Input name="image" id="image" label="Photo" type="file" />
 
-        <Btn type="submit">Add Doggo</Btn>
-        <Link to="/">Cancel</Link>
+        <div className="flex justify-between">
+          <Btn type="submit">Add Doggo</Btn>
+          <Link to="/">Cancel</Link>
+        </div>
       </Form>
     </div>
   );
