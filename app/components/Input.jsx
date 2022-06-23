@@ -48,7 +48,14 @@ const Input = ({
   const sharedAttrs = {
     id: id ? id : `id-${randomString(6)}`,
     name: name,
+    className: 'app-input__input border-2 rounded p-2 bg-white',
   };
+  if (['radio', 'checkbox'].includes(type)) {
+    sharedAttrs.className +=
+      ' relative w-4 h-4 mr-1 appearance-none checked:bg-primary checked:bg-check-white';
+  } else {
+    sharedAttrs.className += ' w-full';
+  }
   if (ariaDescribedby.length) {
     sharedAttrs['aria-describedby'] = ariaDescribedby.join(' ');
   }
@@ -58,6 +65,7 @@ const Input = ({
       className={[
         'app-input',
         errors.length && 'app-input--error',
+        ['radio', 'checkbox'].includes(type) ? 'flex items-center' : '',
         className,
         classes.root,
       ]
@@ -74,7 +82,7 @@ const Input = ({
         <select
           {...sharedAttrs}
           {...attrs}
-          className={['radius-4 color-inherit bg-white', classes.input]
+          className={[sharedAttrs.className, classes.input]
             .filter(Boolean)
             .join(' ')}
         >
@@ -91,10 +99,7 @@ const Input = ({
           {...sharedAttrs}
           type={type}
           {...attrs}
-          className={[
-            'is-full border radius-4 p-4 color-inherit bg-white',
-            classes.input,
-          ]
+          className={[sharedAttrs.className, classes.input]
             .filter(Boolean)
             .join(' ')}
         />

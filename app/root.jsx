@@ -7,9 +7,7 @@ import {
   Scripts,
   ScrollRestoration,
 } from '@remix-run/react';
-import bedorcss from 'bedrocss/bedrocss.min.css';
-import styles from './styles/main.css';
-import styles2 from '../build/styles/app.css';
+import styles from '../build/styles/app.css';
 import SvgSymbols from './SvgSymbols.jsx';
 
 export const meta = () => ({
@@ -20,11 +18,7 @@ export const meta = () => ({
 
 /** @type {import('remix').LinksFunction} */
 export const links = () => {
-  return [
-    { rel: 'stylesheet', href: bedorcss },
-    { rel: 'stylesheet', href: styles },
-    { rel: 'stylesheet', href: styles2 },
-  ];
+  return [{ rel: 'stylesheet', href: styles }];
 };
 
 // Required for actions sent to base route
@@ -52,10 +46,10 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="max-is-640 m-auto">
-        <header className="relative z-10">
-          <nav>
-            <ul className="flex gap-8">
+      <body className="max-w-2xl m-auto">
+        <header role="banner" className="relative z-10">
+          <nav role="navigation">
+            <ul className="flex gap-2">
               {navLinks.map((link) => (
                 <li key={link.to}>
                   <NavLink to={link.to}>{link.text}</NavLink>
@@ -64,9 +58,9 @@ export default function App() {
             </ul>
           </nav>
         </header>
-        <div className="pbe-16">
+        <main role="main" className="pb-4">
           <Outlet />
-        </div>
+        </main>
         <SvgSymbols />
         <ScrollRestoration />
         <Scripts />

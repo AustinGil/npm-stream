@@ -4,34 +4,38 @@ import qs from 'qs';
 
 /**
  * @type {React.FC<{
- * page: number|string,
- * perPage: number,
- * total: number,
- * params?: Record<string, string|number>
+ * currentPage: number|string
+ * totalPages: number|string
+ * queryParams: Record<string, string|number>
+ * pageParam?: string
  * }>}
  */
-const Pagination = ({ query, total, className = '', ...attrs }) => {
-  /** @type {Awaited<ReturnType<typeof loader>>} */
-  const { page, perPage } = query;
+const Pagination = ({
+  currentPage,
+  totalPages,
+  queryParams,
+  pageParam = 'page',
+  className = '',
+  ...attrs
+}) => {
+  currentPage = Number(currentPage);
+  totalPages = Number(totalPages);
+  queryParams = new URLSearchParams(qs.stringify(queryParams));
 
-  const queryParams = new URLSearchParams(qs.stringify(query));
-
-  queryParams.set('page', page - 1);
+  queryParams.set(pageParam, currentPage - 1);
   const previousUrl = queryParams.toString();
-  queryParams.set('page', page + 1);
+  queryParams.set(pageParam, currentPage + 1);
   const nextUrl = queryParams.toString();
-  const lastPage = Math.ceil(total / perPage);
 
   return (
     <nav
       className={['flex justify-between', className].filter(Boolean).join(' ')}
       {...attrs}
     >
-      {page <= 1 && <span>Previous Page</span>}
-      {page > 1 && <Link to={`?${previousUrl}`}>Previous Page</Link>}
-
-      {page >= lastPage && <span>Next Page</span>}
-      {page < lastPage && <Link to={`?${nextUrl}`}>Next Page</Link>}
+      {currentPage <= 1 && <span>Previous Page</span>}
+      {currentPage > 1 && <Link to={`?${previousUrl}`}>Previous Page</Link>}
+      {currentPage >= totalPages && <span>Next Page</span>}
+      {currentPage < totalPages && <Link to={`?${nextUrl}`}>Next Page</Link>}
     </nav>
   );
 };

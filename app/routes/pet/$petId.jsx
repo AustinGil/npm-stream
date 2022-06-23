@@ -138,7 +138,7 @@ export default function Index() {
       <Form
         method="POST"
         encType="multipart/form-data"
-        className="grid gap-8 mbe-16"
+        className="grid gap-2 mb-16"
       >
         <Input
           id="name"
@@ -179,7 +179,7 @@ export default function Index() {
             id="owner-list"
             action={`/pet/${pet.id}/owner/update`}
             method="POST"
-            className="mbe-8"
+            className="mb-8"
           >
             <fieldset>
               {/* <legend>Owners</legend> */}
@@ -197,14 +197,14 @@ export default function Index() {
             </fieldset>
           </fetcher.Form>
 
-          <Btn form="owner-list" type="submit" className="mbe-16">
+          <Btn form="owner-list" type="submit" className="mb-16">
             Save Owners
           </Btn>
         </>
       )}
 
       <h2 className="size-24">Add Owners</h2>
-      <Form className="relative flex align-end mbe-8">
+      <Form className="relative flex items-end mb-8">
         <Input
           id="search"
           label="Search"
@@ -216,7 +216,7 @@ export default function Index() {
         <Btn
           type="submit"
           isPlain
-          className="absolute r-0 b-0 border-transparent bg-transparent color-inherit"
+          className="absolute r-0 b-0 border-transparent bg-transparent text-inherit"
         >
           <Svg label="Search Owners" icon="magnifying-glass" />
         </Btn>
@@ -226,10 +226,10 @@ export default function Index() {
         action={`/pet/${pet.id}/owner`}
         method="POST"
         onSubmit={resetForm}
-        className="mbe-16"
+        className="mb-16"
       >
         {personData?.length > 0 && (
-          <fieldset className="mbe-8">
+          <fieldset className="mb-8">
             <legend>Existing Owners</legend>
             {personData.map((person) => (
               <Input
@@ -247,7 +247,7 @@ export default function Index() {
           id="new-owner-name"
           label="New Owner Name"
           name="new-owner-name"
-          className="mbe-8"
+          className="mb-8"
         />
         <Btn type="submit">Add Owner</Btn>
       </fetcher.Form>

@@ -78,7 +78,7 @@ export default function Index() {
           ))}
         </ul>
       )}
-      <Form method="POST" encType="multipart/form-data" className="grid gap-8">
+      <Form method="POST" encType="multipart/form-data" className="grid gap-2">
         <Input name="name" label="Name" id="name" required />
         <Input
           name="type"

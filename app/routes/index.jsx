@@ -1,9 +1,8 @@
-import { useLoaderData, Link, Form } from '@remix-run/react';
+import { useLoaderData, Form } from '@remix-run/react';
 import { searchParamsToQuery } from '../utils.js';
 import { db } from '../services/index.js';
-import { Btn, Card, Input, Pagination } from '../components/index.js';
+import { Input, Btn, Grid, Card, Pagination } from '../components/index.js';
 
-/** @type {import('@remix-run/node').LoaderFunction} */
 export const loader = async ({ request }) => {
   const url = new URL(request.url);
   const query = searchParamsToQuery(url.searchParams);
@@ -58,7 +57,7 @@ export default function Index() {
     <div>
       <h1>Pets!</h1>
       <Form>
-        <div className="flex align-end gap-8">
+        <div className="flex items-end gap-2">
           <Input
             id="search"
             label="Search"
@@ -69,8 +68,8 @@ export default function Index() {
           <Btn type="submit">Search</Btn>
         </div>
 
-        <div className="flex align-center gap-16">
-          <div className="flex align-center gap-8">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             <Input
               id="sort-by-name"
               label="Sort by name"
@@ -89,7 +88,7 @@ export default function Index() {
               classes={{ label: 'visually-hidden' }}
             />
           </div>
-          <div className="flex align-center gap-8">
+          <div className="flex items-center gap-2">
             <Input
               id="sort-by-id"
               label="Sort by ID"
@@ -111,26 +110,25 @@ export default function Index() {
         </div>
       </Form>
 
-      {doggos.length > 0 && (
-        <>
-          <ul className="grid columns-3 gap-8 mbs-16">
-            {doggos.map((doggo) => (
-              <li key={doggo.id}>
-                <Card
-                  title={doggo.name}
-                  to={`/pet/${doggo.id}`}
-                  thumb={doggo.image?.url ?? ''}
-                  thumbAlt={doggo.name}
-                  className="block-size-full"
-                ></Card>
-              </li>
-            ))}
-          </ul>
+      <Grid
+        items={doggos.map((doggo) => (
+          <Card
+            title={doggo.name}
+            to={`/pet/${doggo.id}`}
+            thumb={doggo.image?.url ?? ''}
+            thumbAlt={doggo.name}
+            className="block-size-full"
+          ></Card>
+        ))}
+      ></Grid>
 
-          <Pagination query={query} total={data.count} className="mbs-16" />
-        </>
-      )}
-      {JSON.stringify(query, null, 2)}
+      <Pagination
+        currentPage={Number(query.page || 1)}
+        totalPages={Math.ceil(Number(data.count) / Number(query.perPage))}
+        queryParams={query}
+        pageParam="page"
+        className="mt-4"
+      />
     </div>
   );
 }

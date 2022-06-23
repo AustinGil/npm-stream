@@ -53,7 +53,7 @@ export default function Index() {
   return (
     <div>
       <h1>{name || person.name}</h1>
-      <Form method="POST" className="grid gap-8 mbe-16">
+      <Form method="POST" className="grid gap-2 mb-16">
         <Input
           id="name"
           name="name"
@@ -70,7 +70,7 @@ export default function Index() {
       <Dialog
         toggle={
           <>
-            <span className="inline-block radius-4 pi-12 pb-4 color-white bg-primary">
+            <span className="inline-block radius-4 pi-12 pb-4 text-white bg-primary">
               Delete
             </span>
           </>

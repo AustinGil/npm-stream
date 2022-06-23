@@ -32,7 +32,9 @@ const Btn = ({
   const classes = [className];
 
   if (!isPlain) {
-    classes.push('radius-4 pi-12 color-white bg-primary');
+    classes.push(
+      'border-2 rounded border-primary py-2 px-3 text-white bg-primary transition-all hover:border-rose-700 hover:bg-rose-700 focus:border-rose-700 focus:bg-rose-700'
+    );
   }
 
   attrs.className = classes.filter(Boolean).join(' ');

@@ -4,7 +4,7 @@ import { Link } from '@remix-run/react';
  * @type {React.FC<{
  * }>}
  */
-const Btn = ({
+const Card = ({
   title = '',
   to = '',
   thumb = '',
@@ -17,27 +17,33 @@ const Btn = ({
 
   return (
     <div
-      className={['card relative overflow-hidden radius-8 bg-white', className]
+      className={[
+        'card relative overflow-hidden rounded-2 bg-white shadow transition-all hover:shadow-lg focus-within:shadow-lg hover:scale-105 focus-within:scale-105',
+        className,
+      ]
         .filter(Boolean)
         .join(' ')}
       {...attrs}
     >
       {thumb && (
-        <div className="aspect-3/2">
+        <div className="aspect-square">
           <img
             src={thumb}
             alt={thumbAlt}
             loading="lazy"
-            className="is-full bs-full fit-cover radius-t-4"
+            className="w-full h-full object-cover rounded-t"
           />
         </div>
       )}
 
-      <div className="p-8">
+      <div className="p-2">
         {title && (
-          <h3>
+          <h3 className="text-2xl">
             {to && (
-              <Link to={to} className="card__link">
+              <Link
+                to={to}
+                className="static text-secondary before:absolute before:inset-0"
+              >
                 {title}
               </Link>
             )}
@@ -50,4 +56,4 @@ const Btn = ({
   );
 };
 
-export default Btn;
+export default Card;

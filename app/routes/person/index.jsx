@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { ulid } from 'ulid';
 import { searchParamsToQuery } from '../../utils.js';
 import { db } from '../../services/index.js';
-import { Btn, Input, Card, Pagination } from '../../components/index.js';
+import { Btn, Input, Grid, Card } from '../../components/index.js';
 
 export const loader = async ({ request }) => {
   const url = new URL(request.url);
@@ -98,7 +98,7 @@ export default function Index() {
       <h1>Peeps!</h1>
 
       <Form>
-        <div className="flex align-end gap-8">
+        <div className="flex items-end gap-2">
           <Input
             id="search"
             label="Search"
@@ -109,8 +109,8 @@ export default function Index() {
           <Btn type="submit">Search</Btn>
         </div>
 
-        <div className="flex align-center gap-16">
-          <div className="flex align-center gap-8">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             <Input
               id="sort-by-name"
               label="Sort by name"
@@ -129,7 +129,7 @@ export default function Index() {
               classes={{ label: 'visually-hidden' }}
             />
           </div>
-          <div className="flex align-center gap-8">
+          <div className="flex items-center gap-2">
             <Input
               id="sort-by-id"
               label="Sort by ID"
@@ -151,25 +151,19 @@ export default function Index() {
         </div>
       </Form>
 
-      {peeps.length > 0 && (
-        <>
-          <ul className="grid columns-3 gap-8 mbs-16">
-            {peeps.map((person) => (
-              <li key={person.id}>
-                <Card
-                  title={person.name}
-                  to={`/person/${person.id}`}
-                  thumb={person.image?.url ?? ''}
-                  thumbAlt={person.name}
-                  className="block-size-full"
-                ></Card>
-              </li>
-            ))}
-          </ul>
-
-          <Pagination query={query} total={data.count} className="mbs-16" />
-        </>
-      )}
+      <Grid
+        items={peeps.map((person) => (
+          <Card
+            title={person.name}
+            to={`/person/${person.id}`}
+            thumb={person.image?.url ?? ''}
+            thumbAlt={person.name}
+            className="block-size-full"
+          ></Card>
+        ))}
+        total={data.count}
+        query={query}
+      ></Grid>
 
       {/* {actionData?.errors?.length && (
         <ul>
