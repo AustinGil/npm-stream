@@ -1,9 +1,14 @@
-import { redirect, unstable_parseMultipartFormData } from '@remix-run/node';
+import {
+  unstable_parseMultipartFormData,
+  json,
+  redirect,
+} from '@remix-run/node';
 import { useActionData, Link, Form } from '@remix-run/react';
 import { z } from 'zod';
 import { ulid } from 'ulid';
 import { db, uploadService } from '../services/index.js';
 import { Btn, Input } from '../components/index.js';
+import { isFetchRequest } from '../utils.js';
 
 export const petTypes = [
   'dog',
@@ -25,6 +30,7 @@ export const petSchema = z.object({
   // owner: TODO person ID
 });
 
+/** @type {import('@remix-run/node').ActionFunction} */
 export async function action({ request }) {
   const formData = await unstable_parseMultipartFormData(
     request,
@@ -54,10 +60,13 @@ export async function action({ request }) {
     };
   }
 
-  await db.pet.create({
+  const results = await db.pet.create({
     data: data,
   });
 
+  if (isFetchRequest(request)) {
+    return json(results);
+  }
   return redirect('/');
 }
 
@@ -69,7 +78,7 @@ export default function Index() {
   }));
   return (
     <div>
-      <h1>Add A Pet</h1>
+      <h1 className="mb-4">Add A Pet</h1>
 
       {actionData?.errors?.length && (
         <ul>
@@ -78,7 +87,7 @@ export default function Index() {
           ))}
         </ul>
       )}
-      <Form method="POST" encType="multipart/form-data" className="grid gap-2">
+      <Form method="POST" encType="multipart/form-data" className="grid gap-4">
         <Input name="name" label="Name" id="name" required />
         <Input
           name="type"
@@ -92,7 +101,7 @@ export default function Index() {
 
         <Input name="image" id="image" label="Photo" type="file" />
 
-        <div className="flex justify-between">
+        <div className="flex items-center justify-between">
           <Btn type="submit">Add Doggo</Btn>
           <Link to="/">Cancel</Link>
         </div>

@@ -25,6 +25,14 @@ export function getRawType(v) {
   return Object.prototype.toString.call(v).slice(8, -1).toLowerCase();
 }
 
+/** @param {Request} request */
+export function isFetchRequest(request) {
+  const accept = request.headers.get('accept');
+  const secFetchMode = request.headers.get('sec-fetch-mode');
+
+  return accept.includes('application/json') || secFetchMode === 'cors';
+}
+
 const DEFAULT_PER_PAGE = 12;
 /**
  * @param {sring|URLSearchParams} search

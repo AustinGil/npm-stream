@@ -1,6 +1,7 @@
 import { redirect, json } from '@remix-run/node';
 import { ulid } from 'ulid';
 import { db } from '../../../services/index.js';
+import { isFetchRequest } from '../../../utils.js';
 
 export async function action({ request, params }) {
   const petId = params.petId;
@@ -40,13 +41,9 @@ export async function action({ request, params }) {
   const results = await db.$transaction(operations);
   const data = results[1] || results[0];
 
-  const accept = request.headers.get('accept');
-  const secFetchMode = request.headers.get('sec-fetch-mode');
-  const referer = request.headers.get('referer');
-
-  if (accept.includes('application/json') || secFetchMode === 'cors') {
+  if (isFetchRequest(request)) {
     return json(data);
   }
 
-  return redirect(referer, 303);
+  return redirect(request.headers.get('referer'), 303);
 }

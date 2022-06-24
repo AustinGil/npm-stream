@@ -2,7 +2,7 @@ import { redirect, json } from '@remix-run/node';
 import { useLoaderData, useActionData, Form } from '@remix-run/react';
 import { z } from 'zod';
 import { ulid } from 'ulid';
-import { searchParamsToQuery } from '../../utils.js';
+import { isFetchRequest, searchParamsToQuery } from '../../utils.js';
 import { db } from '../../services/index.js';
 import { Btn, Input, Grid, Card } from '../../components/index.js';
 
@@ -77,15 +77,10 @@ export async function action({ request }) {
     },
   });
 
-  const accept = request.headers.get('accept');
-  const secFetchMode = request.headers.get('sec-fetch-mode');
-  const referer = request.headers.get('referer');
-
-  if (accept.includes('application/json') || secFetchMode === 'cors') {
+  if (isFetchRequest(request)) {
     return json(results);
   }
-
-  return redirect(referer, 303);
+  return redirect(request.headers.get('referer'), 303);
 }
 
 export default function Index() {
