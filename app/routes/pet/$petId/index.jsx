@@ -2,14 +2,16 @@ import { unstable_parseMultipartFormData } from '@remix-run/node';
 import {
   useLoaderData,
   useActionData,
+  useTransition,
   Form,
   useFetcher,
 } from '@remix-run/react';
-import { useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { ulid } from 'ulid';
-import { db, uploadService } from '../../services/index.js';
-import { petTypes, petSchema } from '../create.jsx';
-import { Btn, Input, Svg } from '../../components/index.js';
+import { db, uploadService } from '../../../services/index.js';
+import { petTypes, petSchema } from '../../create.jsx';
+import LayoutDefault from '../../../layouts/Default.jsx';
+import { Btn, Input, Svg } from '../../../components/index.js';
 
 /** @type {import('@remix-run/node').LoaderFunction} */
 export const loader = async ({ params, request }) => {
@@ -109,43 +111,47 @@ export async function action({ params, request }) {
 export default function Index() {
   /** @type {Awaited<ReturnType<typeof loader>>} */
   const { data: pet, ownerSearch, personData } = useLoaderData();
+  const transition = useTransition();
+  // const fetcher = useFetcher();
+  const newOwnerFetcher = useFetcher();
+  const newOwnerRef = useRef();
   const actionData = useActionData();
-  const [name, setName] = useState(pet.name);
-  const fetcher = useFetcher();
 
-  function updateName(event) {
-    setName(event.target.value);
-  }
   const petOptions = petTypes.map((type) => ({
     label: type.charAt(0).toUpperCase() + type.slice(1),
     value: type,
   }));
-  function resetForm(event) {
-    // event.target.reset();
-  }
+  useEffect(() => {
+    if (newOwnerFetcher.type === 'done' && newOwnerFetcher.data.id) {
+      newOwnerRef.current.reset();
+    }
+  }, [newOwnerFetcher]);
 
   return (
-    <>
-      <h1>{name || pet.name}</h1>
-
-      <div className="flex justify-center bs-256">
+    <LayoutDefault
+      title={
+        transition.submission
+          ? transition.submission?.formData.get('name')
+          : pet.name
+      }
+    >
+      <div className="w-64 m-auto mb-8 aspect-square">
         {(pet.image && pet.image.url && (
-          <img src={pet.image.url} alt={pet.name} className="is-256" />
-        )) || <Svg label="Avatar" icon="paw-print" className="size-256" />}
+          <img src={pet.image.url} alt={pet.name} />
+        )) || <Svg label="Avatar" icon="paw-print" className="text-[16rem]" />}
       </div>
 
-      <h2 className="size-24">Details:</h2>
+      <h2>Details:</h2>
       <Form
         method="POST"
         encType="multipart/form-data"
-        className="grid gap-2 mb-16"
+        className="grid gap-2 mb-8"
       >
         <Input
           id="name"
           name="name"
           label="Name"
-          value={name}
-          onChange={updateName}
+          defaultValue={pet.name}
           errors={actionData?.errors?.name}
         />
         <Input
@@ -165,6 +171,14 @@ export default function Index() {
           defaultValue={new Date(pet.birthday).toISOString().split('T')[0]}
           required
         />
+        {/* TODO: Image URL and upload should be separate fields and support JS/no-JS 
+        <Input
+          id="image-url"
+          name="image-url"
+          label="Image URL"
+          defaultValue={pet.image.url}
+        /> */}
+        {/* TODO: Pull file uploads into dedicated route */}
         <Input id="image" name="image" label="Photo" type="file" />
 
         <div>
@@ -174,12 +188,11 @@ export default function Index() {
 
       {pet.owners?.length > 0 && (
         <>
-          <h2 className="size-24">Owners</h2>
-          <fetcher.Form
-            id="owner-list"
+          <h2>Owners</h2>
+          <Form
             action={`/pet/${pet.id}/owner/update`}
             method="POST"
-            className="mb-8"
+            className="grid gap-2 mb-8"
           >
             <fieldset>
               {/* <legend>Owners</legend> */}
@@ -195,41 +208,41 @@ export default function Index() {
                 />
               ))}
             </fieldset>
-          </fetcher.Form>
 
-          <Btn form="owner-list" type="submit" className="mb-16">
-            Save Owners
-          </Btn>
+            <div>
+              <Btn type="submit">Save Owners</Btn>
+            </div>
+          </Form>
         </>
       )}
 
-      <h2 className="size-24">Add Owners</h2>
-      <Form className="relative flex items-end mb-8">
+      <h2>Add Owners</h2>
+      <Form className="relative flex items-end mb-2">
         <Input
           id="search"
           label="Search"
           name="owner-search"
           defaultValue={ownerSearch}
           className="flex-grow"
-          classes={{ input: 'pie-16' }}
+          classes={{ input: 'pr-8' }}
         />
         <Btn
           type="submit"
           isPlain
-          className="absolute r-0 b-0 border-transparent bg-transparent text-inherit"
+          className="absolute right-0 bottom-0 border-transparent bg-transparent text-inherit"
         >
           <Svg label="Search Owners" icon="magnifying-glass" />
         </Btn>
       </Form>
 
-      <fetcher.Form
+      <newOwnerFetcher.Form
+        ref={newOwnerRef}
         action={`/pet/${pet.id}/owner`}
         method="POST"
-        onSubmit={resetForm}
-        className="mb-16"
+        className="mb-8"
       >
         {personData?.length > 0 && (
-          <fieldset className="mb-8">
+          <fieldset className="mb-2">
             <legend>Existing Owners</legend>
             {personData.map((person) => (
               <Input
@@ -247,14 +260,14 @@ export default function Index() {
           id="new-owner-name"
           label="New Owner Name"
           name="new-owner-name"
-          className="mb-8"
+          className="mb-2"
         />
         <Btn type="submit">Add Owner</Btn>
-      </fetcher.Form>
+      </newOwnerFetcher.Form>
 
       <Form action={`/pet/${pet.id}/delete`} method="POST">
         <Btn type="submit">Delete Pet</Btn>
       </Form>
-    </>
+    </LayoutDefault>
   );
 }

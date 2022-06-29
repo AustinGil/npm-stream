@@ -2,7 +2,6 @@ import {
   Links,
   LiveReload,
   Meta,
-  NavLink,
   Outlet,
   Scripts,
   ScrollRestoration,
@@ -24,21 +23,6 @@ export const links = () => {
 // Required for actions sent to base route
 export { action } from './routes/create.jsx';
 
-const navLinks = [
-  {
-    to: '/',
-    text: 'Home',
-  },
-  {
-    to: '/create',
-    text: 'Create',
-  },
-  {
-    to: '/person',
-    text: 'Owners',
-  },
-];
-
 export default function App() {
   return (
     <html lang="en">
@@ -46,21 +30,8 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="max-w-2xl m-auto">
-        <header role="banner" className="relative z-10">
-          <nav role="navigation">
-            <ul className="flex gap-2">
-              {navLinks.map((link) => (
-                <li key={link.to}>
-                  <NavLink to={link.to}>{link.text}</NavLink>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </header>
-        <main role="main" className="pb-4">
-          <Outlet />
-        </main>
+      <body>
+        <Outlet />
         <SvgSymbols />
         <ScrollRestoration />
         <Scripts />

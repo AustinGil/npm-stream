@@ -48,7 +48,7 @@ const Input = ({
   const sharedAttrs = {
     id: id ? id : `id-${randomString(6)}`,
     name: name,
-    className: 'app-input__input border-2 rounded p-2 bg-white',
+    className: 'app-input__input bg-white',
   };
   if (['radio', 'checkbox'].includes(type)) {
     sharedAttrs.className +=

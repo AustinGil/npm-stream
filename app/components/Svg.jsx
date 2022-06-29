@@ -3,6 +3,7 @@ import React from 'react';
  * @type {React.FC<{
  * icon: import('../SvgSymbols').SvgIconNames,'),
  * href: string,
+ * label: string,
  * }>}
  */
 const Svg = ({ icon = '', href = '', label = '', className }) => {
@@ -14,7 +15,11 @@ const Svg = ({ icon = '', href = '', label = '', className }) => {
   return (
     <>
       {label && <span className="visually-hidden">{label}</span>}
-      <svg className={classes.filter(Boolean).join(' ')}>
+      <svg
+        aria-hidden="true"
+        role="img"
+        className={classes.filter(Boolean).join(' ')}
+      >
         <use xlinkHref={href}></use>
       </svg>
     </>

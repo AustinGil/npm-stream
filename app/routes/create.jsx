@@ -7,6 +7,7 @@ import { useActionData, Link, Form } from '@remix-run/react';
 import { z } from 'zod';
 import { ulid } from 'ulid';
 import { db, uploadService } from '../services/index.js';
+import LayoutDefault from '../layouts/Default.jsx';
 import { Btn, Input } from '../components/index.js';
 import { isFetchRequest } from '../utils.js';
 
@@ -77,9 +78,7 @@ export default function Index() {
     value: type,
   }));
   return (
-    <div>
-      <h1 className="mb-4">Add A Pet</h1>
-
+    <LayoutDefault title="Add A Pet">
       {actionData?.errors?.length && (
         <ul>
           {actionData.errors.map((error) => (
@@ -102,10 +101,10 @@ export default function Index() {
         <Input name="image" id="image" label="Photo" type="file" />
 
         <div className="flex items-center justify-between">
-          <Btn type="submit">Add Doggo</Btn>
+          <Btn type="submit">Add Pet</Btn>
           <Link to="/">Cancel</Link>
         </div>
       </Form>
-    </div>
+    </LayoutDefault>
   );
 }

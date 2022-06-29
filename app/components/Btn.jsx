@@ -33,7 +33,7 @@ const Btn = ({
 
   if (!isPlain) {
     classes.push(
-      'border-2 rounded border-primary py-2 px-3 text-white bg-primary transition-all hover:border-rose-700 hover:bg-rose-700 focus:border-rose-700 focus:bg-rose-700'
+      'border-primary px-3 text-white bg-primary transition-all hover:border-rose-700 hover:bg-rose-700 focus:border-rose-700 focus:bg-rose-700'
     );
   }
 

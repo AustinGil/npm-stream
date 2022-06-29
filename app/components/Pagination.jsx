@@ -1,26 +1,21 @@
 import React from 'react';
-import { Link } from '@remix-run/react';
-import qs from 'qs';
+import { Link, useSearchParams } from '@remix-run/react';
 
 /**
  * @type {React.FC<{
- * currentPage: number|string
  * totalPages: number|string
- * queryParams: Record<string, string|number>
  * pageParam?: string
  * }>}
  */
 const Pagination = ({
-  currentPage,
-  totalPages,
-  queryParams,
+  totalPages = Number.MAX_SAFE_INTEGER,
   pageParam = 'page',
   className = '',
   ...attrs
 }) => {
-  currentPage = Number(currentPage);
+  const [queryParams] = useSearchParams();
+  const currentPage = Number(queryParams.get(pageParam) || 1);
   totalPages = Number(totalPages);
-  queryParams = new URLSearchParams(qs.stringify(queryParams));
 
   queryParams.set(pageParam, currentPage - 1);
   const previousUrl = queryParams.toString();

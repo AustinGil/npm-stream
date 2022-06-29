@@ -1,7 +1,15 @@
-import { useLoaderData, Form } from '@remix-run/react';
+import { useLoaderData, Link, Form } from '@remix-run/react';
 import { searchParamsToQuery } from '../utils.js';
 import { db } from '../services/index.js';
-import { Input, Btn, Grid, Card, Pagination } from '../components/index.js';
+import LayoutDefault from '../layouts/Default.jsx';
+import {
+  Input,
+  Btn,
+  Grid,
+  Card,
+  Pagination,
+  Svg,
+} from '../components/index.js';
 
 export const loader = async ({ request }) => {
   const url = new URL(request.url);
@@ -54,22 +62,18 @@ export default function Index() {
   const doggos = data.items;
 
   return (
-    <div>
-      <h1>Pets!</h1>
-      <Form>
-        <div className="flex items-end gap-2">
-          <Input
-            id="search"
-            label="Search"
-            name="name[contains]"
-            defaultValue={query.name?.contains ?? ''}
-            className="flex-grow"
-          />
-          <Btn type="submit">Search</Btn>
-        </div>
+    <LayoutDefault title="Pets!">
+      <Form className="grid sm:flex gap-4 flex-wrap items-end">
+        <Input
+          id="search"
+          label="Search"
+          name="name[contains]"
+          defaultValue={query.name?.contains ?? ''}
+          className="flex-grow"
+        />
 
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
+        <div className="sm:order-1 flex items-center gap-4 flex-wrap w-full">
+          <div className="flex items-center gap-1">
             <Input
               id="sort-by-name"
               label="Sort by name"
@@ -78,17 +82,22 @@ export default function Index() {
               defaultValue="name"
               defaultChecked={query.sortBy[0] === 'name'}
             />
-            <Input
-              id="sort-dir-name"
-              label="Sort direction"
-              name="sortDir[0]"
-              type="select"
-              defaultValue={query.sortDir[0]}
-              options={['asc', 'desc']}
-              classes={{ label: 'visually-hidden' }}
-            />
+            <label htmlFor="sort-name-dir" className="sort-direction-toggle">
+              <input
+                id="sort-name-dir"
+                type="checkbox"
+                name="sortDir[0]"
+                defaultValue="desc"
+                defaultChecked={query.sortDir[0] === 'desc'}
+                className="visually-hidden"
+              />
+              <Svg icon="chevron-down" />
+              <Svg icon="chevron-up" />
+              <span className="visually-hidden">Toggle sort direction</span>
+            </label>
           </div>
-          <div className="flex items-center gap-2">
+
+          <div className="flex items-center gap-1">
             <Input
               id="sort-by-id"
               label="Sort by ID"
@@ -97,17 +106,23 @@ export default function Index() {
               defaultValue="id"
               defaultChecked={query.sortBy[1] === 'id'}
             />
-            <Input
-              id="sort-dir-id"
-              label="Sort direction"
-              name="sortDir[1]"
-              type="select"
-              defaultValue={query.sortDir[1]}
-              options={['asc', 'desc']}
-              classes={{ label: 'visually-hidden' }}
-            />
+            <label htmlFor="sort-id-rid" className="sort-direction-toggle">
+              <input
+                id="sort-id-rid"
+                type="checkbox"
+                name="sortDir[1]"
+                defaultValue="desc"
+                defaultChecked={query.sortDir[1] === 'desc'}
+                className="visually-hidden"
+              />
+              <Svg icon="chevron-down" />
+              <Svg icon="chevron-up" />
+              <span className="visually-hidden">Toggle sort direction</span>
+            </label>
           </div>
         </div>
+
+        <Btn type="submit">Search</Btn>
       </Form>
 
       <Grid
@@ -123,12 +138,10 @@ export default function Index() {
       ></Grid>
 
       <Pagination
-        currentPage={Number(query.page || 1)}
         totalPages={Math.ceil(Number(data.count) / Number(query.perPage))}
-        queryParams={query}
         pageParam="page"
         className="mt-4"
       />
-    </div>
+    </LayoutDefault>
   );
 }
