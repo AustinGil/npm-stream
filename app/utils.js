@@ -33,6 +33,24 @@ export function isFetchRequest(request) {
   return accept.includes('application/json') || secFetchMode === 'cors';
 }
 
+/**
+ * @param {() => {}} func
+ * @param {number} delay
+ * @param {{ leading: boolean }} options
+ */
+export function debounce(func, delay, { leading } = {}) {
+  let timerId;
+
+  return (...args) => {
+    if (!timerId && leading) {
+      func(...args);
+    }
+    clearTimeout(timerId);
+
+    timerId = setTimeout(() => func(...args), delay);
+  };
+}
+
 const DEFAULT_PER_PAGE = 12;
 /**
  * @param {sring|URLSearchParams} search

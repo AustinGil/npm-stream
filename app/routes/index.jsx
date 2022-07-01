@@ -1,5 +1,5 @@
-import { useLoaderData, Link, Form } from '@remix-run/react';
-import { searchParamsToQuery } from '../utils.js';
+import { useLoaderData, Form, useSubmit } from '@remix-run/react';
+import { searchParamsToQuery, debounce } from '../utils.js';
 import { db } from '../services/index.js';
 import LayoutDefault from '../layouts/Default.jsx';
 import {
@@ -60,10 +60,15 @@ export default function Index() {
   /** @type {Awaited<ReturnType<typeof loader>>} */
   const { data, query } = useLoaderData();
   const doggos = data.items;
+  const submit = useSubmit();
+  const debouncedSubmit = debounce(submit, 300);
 
   return (
     <LayoutDefault title="Pets!">
-      <Form className="grid sm:flex gap-4 flex-wrap items-end">
+      <Form
+        onChange={(e) => debouncedSubmit(e.currentTarget)}
+        className="grid sm:flex gap-4 flex-wrap items-end"
+      >
         <Input
           id="search"
           label="Search"

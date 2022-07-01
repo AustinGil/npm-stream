@@ -1,7 +1,8 @@
 import { redirect, json } from '@remix-run/node';
-import { db } from '../../../../services/index.js';
-import { isFetchRequest } from '../../../../utils.js';
+import { db } from '../../../services/index.js';
+import { isFetchRequest } from '../../../utils.js';
 
+/** @type {import('@remix-run/node').ActionFunction} */
 export async function action({ request, params }) {
   const petId = params.petId;
   const formData = await request.formData();
@@ -25,5 +26,7 @@ export async function action({ request, params }) {
     return json(results);
   }
 
-  return redirect(request.headers.get('referer'), 303);
+  /** @see https://github.com/remix-run/remix/issues/3612 */
+  // return redirect(request.headers.get('referer'), 303);
+  return redirect(`/pet/${petId}`, 303);
 }
