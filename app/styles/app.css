@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #ca1e49;
+  --color-secondary: #1796bc;
+  --color-light: #fcfbfb;
+  --color-dark: #004000;
+}
+
+@layer base {
+  html {
+    accent-color: var(--color-primary);
+    /* color: var(--color-dark); */
+    background-color: var(--color-light);
+  }
+  a {
+    color: var(--color-primary);
+  }
+  h1 {
+    @apply text-5xl;
+  }
+  h2 {
+    @apply text-3xl;
+  }
+  input,
+  select,
+  textarea,
+  button {
+    @apply border-2 rounded p-2;
+  }
+}
+
+[role="banner"] a {
+  color: var(--color-light);
+}
+
+.visually-hidden {
+  position: absolute;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  border: 0;
+  padding: 0;
+}
+
+.grid-area-1\/1 {
+  grid-area: 1/1;
+}
+
+.icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+}
+
+.card :where(a:not(.static), button, input, select, textarea) {
+  position: relative;
+}
+
+.sort-direction-toggle:focus-within {
+  outline-width: 1px;
+  outline-style: auto;
+  outline-color: Highlight;
+  outline-color: -webkit-focus-ring-color;
+}
+.sort-direction-toggle .icon--chevron-down {
+  display: none;
+}
+.sort-direction-toggle input:checked ~ .icon--chevron-down {
+  display: unset;
+}
+.sort-direction-toggle input:checked ~ .icon--chevron-up {
+  display: none;
+}

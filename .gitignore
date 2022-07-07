@@ -6,6 +6,4 @@ node_modules
 *.env
 prisma/*.db
 
-app/styles
-
 public/uploads
