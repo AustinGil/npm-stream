@@ -9,7 +9,6 @@ import { ulid } from 'ulid';
 import { db, uploadService } from '../services/index.js';
 import LayoutDefault from '../layouts/Default.jsx';
 import { Btn, Input } from '../components/index.js';
-import { isFetchRequest } from '../utils.js';
 
 export const petTypes = [
   'dog',
@@ -28,6 +27,7 @@ export const petSchema = z.object({
     (v) => (v ? new Date(v) : undefined),
     z.date().optional()
   ),
+  imageId: z.string().optional(),
   // owner: TODO person ID
 });
 
@@ -61,13 +61,10 @@ export async function action({ request }) {
     };
   }
 
-  const results = await db.pet.create({
+  await db.pet.create({
     data: data,
   });
 
-  if (isFetchRequest(request)) {
-    return json(results);
-  }
   return redirect('/');
 }
 

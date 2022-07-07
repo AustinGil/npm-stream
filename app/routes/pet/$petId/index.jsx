@@ -6,14 +6,14 @@ import {
   Form,
   useFetcher,
 } from '@remix-run/react';
-import { useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ulid } from 'ulid';
 import { db, uploadService } from '../../../services/index.js';
 import { petTypes, petSchema } from '../../create.jsx';
 import LayoutDefault from '../../../layouts/Default.jsx';
 import { Btn, Input, Svg } from '../../../components/index.js';
 
-/** @type {import('@remix-run/node').LoaderFunction} */
+// /** @type {import('@remix-run/node').LoaderFunction<string>} */
 export const loader = async ({ params, request }) => {
   const id = params.petId;
   const url = new URL(request.url);
@@ -68,7 +68,7 @@ export async function action({ params, request }) {
   );
   const body = Object.fromEntries(formData.entries());
 
-  const { error, success, data } = petSchema.safeParse(body);
+  const { error, success, data } = petSchema.partial().safeParse(body);
 
   if (!success) {
     const errors = {};
@@ -84,16 +84,19 @@ export async function action({ params, request }) {
     };
   }
 
-  if (body.image) {
+  if (body.file && body.file.name && body.file.size) {
+    delete data.imageId;
     data.image = {
       create: {
         id: ulid(),
-        size: body.image.size,
-        url: `/uploads/${body.image.name}`,
-        type: body.image.type,
-        name: body.image.name,
+        size: body.file.size,
+        url: `/uploads/${body.file.name}`,
+        type: body.file.type,
+        name: body.file.name,
       },
     };
+  } else {
+    data.imageId = data.imageId || null;
   }
 
   const pet = await db.pet.update({
@@ -112,7 +115,6 @@ export default function Index() {
   /** @type {Awaited<ReturnType<typeof loader>>} */
   const { data: pet, ownerSearch, personData } = useLoaderData();
   const transition = useTransition();
-  // const fetcher = useFetcher();
   const newOwnerFetcher = useFetcher();
   const newOwnerRef = useRef();
   const actionData = useActionData();
@@ -121,6 +123,12 @@ export default function Index() {
     label: type.charAt(0).toUpperCase() + type.slice(1),
     value: type,
   }));
+
+  const [imgId, setImgId] = useState(pet.imageId ?? '');
+  useEffect(() => {
+    setImgId(pet.imageId);
+  }, [pet]);
+
   useEffect(() => {
     if (newOwnerFetcher.type === 'done' && newOwnerFetcher.data.id) {
       newOwnerRef.current.reset();
@@ -136,9 +144,26 @@ export default function Index() {
       }
     >
       <div className="w-64 m-auto mb-8 aspect-square">
-        {(pet.image && pet.image.url && (
-          <img src={pet.image.url} alt={pet.name} />
-        )) || <Svg label="Avatar" icon="paw-print" className="text-[16rem]" />}
+        {pet.image && (
+          <div className="relative aspect-square">
+            <img src={pet.image.url} alt={pet.name} />
+
+            <Form
+              method="POST"
+              encType="multipart/form-data"
+              className="absolute bottom-0 right-0"
+            >
+              <input type="hidden" name="imageId" defaultValue="" />
+              <Btn type="submit" className="rounded-full bg-black-700">
+                <span aria-hidden="true">&times;</span>
+                <span className="visually-hidden">Remove photo</span>
+              </Btn>
+            </Form>
+          </div>
+        )}
+        {!pet.image && (
+          <Svg label="Avatar" icon="paw-print" className="text-[16rem]" />
+        )}
       </div>
 
       <h2>Details:</h2>
@@ -179,7 +204,10 @@ export default function Index() {
           defaultValue={pet.image.url}
         /> */}
         {/* TODO: Pull file uploads into dedicated route */}
-        <Input id="image" name="image" label="Photo" type="file" />
+
+        <input name="imageId" type="hidden" defaultValue={imgId} />
+
+        <Input id="file" name="file" label="Photo" type="file" />
 
         <div>
           <Btn type="submit">Edit Pet</Btn>

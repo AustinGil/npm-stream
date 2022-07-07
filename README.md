@@ -52,6 +52,8 @@ rm -rf app
 cp -R ../my-old-remix-app/app app
 ```
 
+Example local DB with Docker: `docker run -d --name=postgres -p 5432:5432 -e POSTGRES_PASSWORD=pass postgres`
+
 Content Outline
 - Intro
   - What/why a DB

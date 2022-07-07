@@ -17,10 +17,10 @@ const Pagination = ({
   const currentPage = Number(queryParams.get(pageParam) || 1);
   totalPages = Number(totalPages);
 
-  queryParams.set(pageParam, currentPage - 1);
-  const previousUrl = queryParams.toString();
-  queryParams.set(pageParam, currentPage + 1);
-  const nextUrl = queryParams.toString();
+  const previousQuery = new URLSearchParams(queryParams);
+  previousQuery.set(pageParam, currentPage - 1);
+  const nextQuery = new URLSearchParams(queryParams);
+  nextQuery.set(pageParam, currentPage + 1);
 
   return (
     <nav
@@ -28,9 +28,13 @@ const Pagination = ({
       {...attrs}
     >
       {currentPage <= 1 && <span>Previous Page</span>}
-      {currentPage > 1 && <Link to={`?${previousUrl}`}>Previous Page</Link>}
+      {currentPage > 1 && (
+        <Link to={`?${previousQuery.toString()}`}>Previous Page</Link>
+      )}
       {currentPage >= totalPages && <span>Next Page</span>}
-      {currentPage < totalPages && <Link to={`?${nextUrl}`}>Next Page</Link>}
+      {currentPage < totalPages && (
+        <Link to={`?${nextQuery.toString()}`}>Next Page</Link>
+      )}
     </nav>
   );
 };
