@@ -1,5 +1,5 @@
 import { useLoaderData, Form, useSubmit } from '@remix-run/react';
-import { searchParamsToQuery, debounce } from '../utils.js';
+import { searchParamsToQuery, debounce, getPetTypeSvgHref } from '../utils.js';
 import { db } from '../services/index.js';
 import LayoutDefault from '../layouts/Default.jsx';
 import {
@@ -62,6 +62,7 @@ export default function Index() {
   const doggos = data.items;
   const submit = useSubmit();
   const debouncedSubmit = debounce(submit, 300);
+  const totalPages = Math.ceil(Number(data.count) / Number(query.perPage));
 
   return (
     <LayoutDefault title="Pets!">
@@ -137,16 +138,15 @@ export default function Index() {
             to={`/pet/${doggo.id}`}
             thumb={doggo.image?.url ?? ''}
             thumbAlt={doggo.name}
+            placeholderSvg={getPetTypeSvgHref(doggo.type)}
             className="block-size-full"
           ></Card>
         ))}
       ></Grid>
 
-      <Pagination
-        totalPages={Math.ceil(Number(data.count) / Number(query.perPage))}
-        pageParam="page"
-        className="mt-4"
-      />
+      {totalPages > 1 && (
+        <Pagination totalPages={totalPages} pageParam="page" className="mt-4" />
+      )}
     </LayoutDefault>
   );
 }

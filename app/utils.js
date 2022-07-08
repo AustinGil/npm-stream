@@ -82,3 +82,21 @@ export function searchParamsToQuery(search) {
 
   return query;
 }
+
+/**
+ * @param {keyof typeSvgMap} petType
+ */
+export function getPetTypeSvgHref(petType) {
+  const typeSvgMap = /** @type {const} */ ({
+    bird: '#icon-bird',
+    bunny: '#icon-bunny',
+    cat: '#icon-cat',
+    dog: '#icon-dog',
+    fish: '#icon-fish',
+    reptile: '#icon-lizard',
+  });
+  if (typeSvgMap[petType]) {
+    return typeSvgMap[petType];
+  }
+  return '#icon-paw-print';
+}

@@ -9,6 +9,7 @@ import {
 import { useState, useEffect, useRef } from 'react';
 import { ulid } from 'ulid';
 import { db, uploadService } from '../../../services/index.js';
+import { getPetTypeSvgHref } from '../../../utils.js';
 import { petTypes, petSchema } from '../../create.jsx';
 import LayoutDefault from '../../../layouts/Default.jsx';
 import { Btn, Input, Svg } from '../../../components/index.js';
@@ -162,7 +163,7 @@ export default function Index() {
           </div>
         )}
         {!pet.image && (
-          <Svg label="Avatar" icon="paw-print" className="text-[16rem]" />
+          <Svg label="Avatar" href={getPetTypeSvgHref(pet.type)} />
         )}
       </div>
 

@@ -49,7 +49,7 @@ export async function action({ request }) {
 
   data.id = ulid();
 
-  if (body.image) {
+  if (body.file && body.file.name && body.file.size) {
     data.image = {
       create: {
         id: ulid(),

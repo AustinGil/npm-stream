@@ -6,13 +6,11 @@
   --color-primary: #ca1e49;
   --color-secondary: #1796bc;
   --color-light: #fcfbfb;
-  --color-dark: #004000;
 }
 
 @layer base {
   html {
     accent-color: var(--color-primary);
-    /* color: var(--color-dark); */
     background-color: var(--color-light);
   }
   a {
@@ -30,6 +28,13 @@
   button {
     @apply border-2 rounded p-2;
   }
+}
+
+svg:where(:not([width])) {
+  width: 100%;
+}
+svg:where(:not([height])) {
+  height: 100%;
 }
 
 [role="banner"] a {

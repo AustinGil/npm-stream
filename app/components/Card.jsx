@@ -1,7 +1,14 @@
 import React from 'react';
 import { Link } from '@remix-run/react';
+import { Svg } from './index.js';
+
 /**
  * @type {React.FC<{
+ * title?: string,
+ * to?: string,
+ * thumb?: string,
+ * thumbAlt?: string,
+ * placeholderSvg?: string,
  * }>}
  */
 const Card = ({
@@ -9,6 +16,7 @@ const Card = ({
   to = '',
   thumb = '',
   thumbAlt,
+  placeholderSvg = '',
   className,
   children,
   ...attrs
@@ -25,16 +33,19 @@ const Card = ({
         .join(' ')}
       {...attrs}
     >
-      {thumb && (
-        <div className="aspect-square">
+      <div className="aspect-square">
+        {thumb && (
           <img
             src={thumb}
             alt={thumbAlt}
             loading="lazy"
             className="w-full h-full object-cover rounded-t"
           />
-        </div>
-      )}
+        )}
+        {!thumb && placeholderSvg && (
+          <Svg label="Avatar" href={placeholderSvg} className="p-4" />
+        )}
+      </div>
 
       <div className="p-2">
         {title && (
