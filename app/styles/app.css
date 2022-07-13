@@ -12,6 +12,8 @@
   html {
     accent-color: var(--color-primary);
     background-color: var(--color-light);
+    background-image: url('/img/bg.svg');
+    background-size: 12rem;
   }
   a {
     color: var(--color-primary);
@@ -28,17 +30,21 @@
   button {
     @apply border-2 rounded p-2;
   }
+  svg:where(:not([width])) {
+    width: 100%;
+  }
+  svg:where(:not([height])) {
+    height: 100%;
+  }
+  [role="banner"] a {
+    color: var(--color-light);
+  }
 }
 
-svg:where(:not([width])) {
-  width: 100%;
-}
-svg:where(:not([height])) {
-  height: 100%;
-}
-
-[role="banner"] a {
-  color: var(--color-light);
+@layer components {
+  .btn {
+    @apply border-primary px-3 text-white bg-primary transition-all hover:border-rose-700 hover:bg-rose-700 focus:border-rose-700 focus:bg-rose-700;
+  }
 }
 
 .visually-hidden {

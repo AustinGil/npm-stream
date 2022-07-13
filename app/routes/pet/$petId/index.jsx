@@ -146,18 +146,20 @@ export default function Index() {
     >
       <div className="w-64 m-auto mb-8 aspect-square">
         {pet.image && (
-          <div className="relative aspect-square">
+          <div className="group relative aspect-square">
             <img src={pet.image.url} alt={pet.name} />
 
             <Form
               method="POST"
               encType="multipart/form-data"
-              className="absolute bottom-0 right-0"
+              className="absolute bottom-1 right-1"
             >
               <input type="hidden" name="imageId" defaultValue="" />
-              <Btn type="submit" className="rounded-full bg-black-700">
-                <span aria-hidden="true">&times;</span>
-                <span className="visually-hidden">Remove photo</span>
+              <Btn
+                type="submit"
+                className="rounded-full p-1 text-2xl leading-0 bg-gray-700 opacity-50 group-hover:opacity-100"
+              >
+                <Svg label="Remove photo" icon="cancel" />
               </Btn>
             </Form>
           </div>

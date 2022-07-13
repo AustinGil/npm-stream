@@ -2,6 +2,9 @@ module.exports = {
   content: ['./app/**/*.{ts,tsx,jsx,js}'],
   theme: {
     extend: {
+      lineHeight: {
+        0: '0',
+      },
       colors: {
         light: '#fcfbfb',
         dark: '#004000',
