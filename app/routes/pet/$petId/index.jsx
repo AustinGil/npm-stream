@@ -144,161 +144,155 @@ export default function Index() {
           : pet.name
       }
     >
-      <div className="w-64 m-auto mb-8 aspect-square">
-        {pet.image && (
-          <div className="group relative aspect-square">
-            <img src={pet.image.url} alt={pet.name} />
+      <div className="border-2 rounded p-4 bg-white">
+        <div className="w-64 m-auto mb-8 aspect-square">
+          {pet.image && (
+            <div className="group relative aspect-square">
+              <img src={pet.image.url} alt={pet.name} />
 
-            <Form
-              method="POST"
-              encType="multipart/form-data"
-              className="absolute bottom-1 right-1"
-            >
-              <input type="hidden" name="imageId" defaultValue="" />
-              <Btn
-                type="submit"
-                className="rounded-full p-1 text-2xl leading-0 bg-gray-700 opacity-50 group-hover:opacity-100"
+              <Form
+                method="POST"
+                encType="multipart/form-data"
+                className="absolute bottom-1 right-1"
               >
-                <Svg label="Remove photo" icon="cancel" />
-              </Btn>
-            </Form>
-          </div>
-        )}
-        {!pet.image && (
-          <Svg label="Avatar" href={getPetTypeSvgHref(pet.type)} />
-        )}
-      </div>
-
-      <h2>Details:</h2>
-      <Form
-        method="POST"
-        encType="multipart/form-data"
-        className="grid gap-2 mb-8"
-      >
-        <Input
-          id="name"
-          name="name"
-          label="Name"
-          defaultValue={pet.name}
-          errors={actionData?.errors?.name}
-        />
-        <Input
-          id="type"
-          name="type"
-          label="Type"
-          type="select"
-          options={['', ...petOptions]}
-          defaultValue={pet.type}
-          required
-        />
-        <Input
-          id="birthday"
-          name="birthday"
-          label="Birthday"
-          type="date"
-          defaultValue={new Date(pet.birthday).toISOString().split('T')[0]}
-          required
-        />
-        {/* TODO: Image URL and upload should be separate fields and support JS/no-JS 
-        <Input
-          id="image-url"
-          name="image-url"
-          label="Image URL"
-          defaultValue={pet.image.url}
-        /> */}
-        {/* TODO: Pull file uploads into dedicated route */}
-
-        <input name="imageId" type="hidden" defaultValue={imgId} />
-
-        <Input id="file" name="file" label="Photo" type="file" />
-
-        <div>
-          <Btn type="submit">Edit Pet</Btn>
+                <input type="hidden" name="imageId" defaultValue="" />
+                <Btn
+                  type="submit"
+                  className="rounded-full p-1 text-2xl leading-0 bg-gray-700 opacity-50 group-hover:opacity-100"
+                >
+                  <Svg label="Remove photo" icon="cancel" />
+                </Btn>
+              </Form>
+            </div>
+          )}
+          {!pet.image && (
+            <Svg label="Avatar" href={getPetTypeSvgHref(pet.type)} />
+          )}
         </div>
-      </Form>
 
-      {pet.owners?.length > 0 && (
-        <>
-          <h2>Owners</h2>
-          <Form
-            action={`/pet/${pet.id}/owner/update`}
-            method="POST"
-            className="grid gap-2 mb-8"
+        <h2>Details:</h2>
+        <Form
+          method="POST"
+          encType="multipart/form-data"
+          className="grid gap-2 mb-8"
+        >
+          <Input
+            id="name"
+            name="name"
+            label="Name"
+            defaultValue={pet.name}
+            errors={actionData?.errors?.name}
+          />
+          <Input
+            id="type"
+            name="type"
+            label="Type"
+            type="select"
+            options={['', ...petOptions]}
+            defaultValue={pet.type}
+            required
+          />
+          <Input
+            id="birthday"
+            name="birthday"
+            label="Birthday"
+            type="date"
+            defaultValue={new Date(pet.birthday).toISOString().split('T')[0]}
+            required
+          />
+
+          <input name="imageId" type="hidden" defaultValue={imgId} />
+
+          <Input id="file" name="file" label="Photo" type="file" />
+
+          <div>
+            <Btn type="submit">Edit Pet</Btn>
+          </div>
+        </Form>
+
+        {pet.owners?.length > 0 && (
+          <>
+            <h2>Owners</h2>
+            <Form
+              action={`/pet/${pet.id}/owner/update`}
+              method="POST"
+              className="grid gap-2 mb-8"
+            >
+              <fieldset>
+                {/* <legend>Owners</legend> */}
+                {pet.owners.map((owner) => (
+                  <Input
+                    key={owner.id}
+                    id={owner.id}
+                    defaultValue={owner.id}
+                    defaultChecked={true}
+                    label={owner.name}
+                    name="owner"
+                    type="checkbox"
+                  />
+                ))}
+              </fieldset>
+
+              <div>
+                <Btn type="submit">Save Owners</Btn>
+              </div>
+            </Form>
+          </>
+        )}
+
+        <h2>Add Owners</h2>
+        <Form className="relative flex items-end mb-2">
+          <Input
+            id="search"
+            label="Search"
+            name="owner-search"
+            defaultValue={ownerSearch}
+            className="flex-grow"
+            classes={{ input: 'pr-8' }}
+          />
+          <Btn
+            type="submit"
+            isPlain
+            className="absolute right-0 bottom-0 border-transparent bg-transparent text-inherit"
           >
-            <fieldset>
-              {/* <legend>Owners</legend> */}
-              {pet.owners.map((owner) => (
+            <Svg label="Search Owners" icon="magnifying-glass" />
+          </Btn>
+        </Form>
+
+        <newOwnerFetcher.Form
+          ref={newOwnerRef}
+          action={`/pet/${pet.id}/owner`}
+          method="POST"
+          className="mb-8"
+        >
+          {personData?.length > 0 && (
+            <fieldset className="mb-2">
+              <legend>Existing Owners</legend>
+              {personData.map((person) => (
                 <Input
-                  key={owner.id}
-                  id={owner.id}
-                  defaultValue={owner.id}
-                  defaultChecked={true}
-                  label={owner.name}
+                  key={person.id}
+                  id={person.id}
+                  defaultValue={person.id}
+                  label={person.name}
                   name="owner"
                   type="checkbox"
                 />
               ))}
             </fieldset>
+          )}
+          <Input
+            id="new-owner-name"
+            label="New Owner Name"
+            name="new-owner-name"
+            className="mb-2"
+          />
+          <Btn type="submit">Add Owner</Btn>
+        </newOwnerFetcher.Form>
 
-            <div>
-              <Btn type="submit">Save Owners</Btn>
-            </div>
-          </Form>
-        </>
-      )}
-
-      <h2>Add Owners</h2>
-      <Form className="relative flex items-end mb-2">
-        <Input
-          id="search"
-          label="Search"
-          name="owner-search"
-          defaultValue={ownerSearch}
-          className="flex-grow"
-          classes={{ input: 'pr-8' }}
-        />
-        <Btn
-          type="submit"
-          isPlain
-          className="absolute right-0 bottom-0 border-transparent bg-transparent text-inherit"
-        >
-          <Svg label="Search Owners" icon="magnifying-glass" />
-        </Btn>
-      </Form>
-
-      <newOwnerFetcher.Form
-        ref={newOwnerRef}
-        action={`/pet/${pet.id}/owner`}
-        method="POST"
-        className="mb-8"
-      >
-        {personData?.length > 0 && (
-          <fieldset className="mb-2">
-            <legend>Existing Owners</legend>
-            {personData.map((person) => (
-              <Input
-                key={person.id}
-                id={person.id}
-                defaultValue={person.id}
-                label={person.name}
-                name="owner"
-                type="checkbox"
-              />
-            ))}
-          </fieldset>
-        )}
-        <Input
-          id="new-owner-name"
-          label="New Owner Name"
-          name="new-owner-name"
-          className="mb-2"
-        />
-        <Btn type="submit">Add Owner</Btn>
-      </newOwnerFetcher.Form>
-
-      <Form action={`/pet/${pet.id}/delete`} method="POST">
-        <Btn type="submit">Delete Pet</Btn>
-      </Form>
+        <Form action={`/pet/${pet.id}/delete`} method="POST">
+          <Btn type="submit">Delete Pet</Btn>
+        </Form>
+      </div>
     </LayoutDefault>
   );
 }

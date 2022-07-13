@@ -53,26 +53,3 @@ cp -R ../my-old-remix-app/app app
 ```
 
 Example local DB with Docker: `docker run -d --name=postgres -p 5432:5432 -e POSTGRES_PASSWORD=pass postgres`
-
-Content Outline
-- Intro
-  - What/why a DB
-  - Setting up dev env
-  - Schema design
-- Basic operations
-  - Create
-  - Read
-  - Update
-  - Delete
-- Listing content
-  - Pagination
-  - Filtering
-  - Sorting
-- Advanced concepts
-  - Migrations
-  - Relationships
-  - Transactions
-- Deploy
-  - Dev vs Staging vs Prod
-  - What/why managed DB
-  - Deploying to Linode
