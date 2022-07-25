@@ -4,28 +4,23 @@ import {
   useActionData,
   useTransition,
   Form,
-  useFetcher,
 } from '@remix-run/react';
-import { useState, useEffect, useRef } from 'react';
-import { ulid } from 'ulid';
+import { useState, useEffect } from 'react';
 import { db, uploadService } from '../../../services/index.js';
 import { getPetTypeSvgHref } from '../../../utils.js';
 import { petTypes, petSchema } from '../../create.jsx';
 import LayoutDefault from '../../../layouts/Default.jsx';
-import { Btn, Input, Svg } from '../../../components/index.js';
+import { Btn, Input, Svg, Dialog } from '../../../components/index.js';
 
 // /** @type {import('@remix-run/node').LoaderFunction<string>} */
 export const loader = async ({ params, request }) => {
   const id = params.petId;
-  const url = new URL(request.url);
-  const searchParams = url.searchParams;
 
   const pet = await db.pet.findFirst({
     where: {
       id: id,
     },
     include: {
-      owners: true,
       image: true,
     },
   });
@@ -35,29 +30,8 @@ export const loader = async ({ params, request }) => {
     });
   }
 
-  let ownerSearch = searchParams.get('owner-search') ?? '';
-  /** @type {import('@prisma/client').Prisma.PersonFindManyArgs} */
-  let personSearchParams = {
-    where: {
-      id: {
-        notIn: pet.owners.map((owner) => owner.id),
-      },
-    },
-    take: 12,
-  };
-  if (ownerSearch) {
-    personSearchParams.where.AND = {
-      name: {
-        contains: ownerSearch,
-      },
-    };
-  }
-  const personData = await db.person.findMany(personSearchParams);
-
   return {
     data: pet,
-    ownerSearch,
-    personData,
   };
 };
 
@@ -89,7 +63,6 @@ export async function action({ params, request }) {
     delete data.imageId;
     data.image = {
       create: {
-        id: ulid(),
         size: body.file.size,
         url: `/uploads/${body.file.name}`,
         type: body.file.type,
@@ -114,10 +87,8 @@ export async function action({ params, request }) {
 
 export default function Index() {
   /** @type {Awaited<ReturnType<typeof loader>>} */
-  const { data: pet, ownerSearch, personData } = useLoaderData();
+  const { data: pet } = useLoaderData();
   const transition = useTransition();
-  const newOwnerFetcher = useFetcher();
-  const newOwnerRef = useRef();
   const actionData = useActionData();
 
   const petOptions = petTypes.map((type) => ({
@@ -130,11 +101,17 @@ export default function Index() {
     setImgId(pet.imageId);
   }, [pet]);
 
-  useEffect(() => {
-    if (newOwnerFetcher.type === 'done' && newOwnerFetcher.data.id) {
-      newOwnerRef.current.reset();
+  function promptDelete(event) {
+    if (
+      confirm(
+        `Are you sure you want to delete this entry? This cannot be undone.`
+      )
+    ) {
+      return;
     }
-  }, [newOwnerFetcher]);
+
+    event.preventDefault();
+  }
 
   return (
     <LayoutDefault
@@ -148,7 +125,11 @@ export default function Index() {
         <div className="w-64 m-auto mb-8 aspect-square">
           {pet.image && (
             <div className="group relative aspect-square">
-              <img src={pet.image.url} alt={pet.name} />
+              <img
+                src={pet.image.url}
+                alt={pet.name}
+                className="w-full h-full object-cover"
+              />
 
               <Form
                 method="POST"
@@ -210,88 +191,16 @@ export default function Index() {
           </div>
         </Form>
 
-        {pet.owners?.length > 0 && (
-          <>
-            <h2>Owners</h2>
-            <Form
-              action={`/pet/${pet.id}/owner/update`}
-              method="POST"
-              className="grid gap-2 mb-8"
-            >
-              <fieldset>
-                {/* <legend>Owners</legend> */}
-                {pet.owners.map((owner) => (
-                  <Input
-                    key={owner.id}
-                    id={owner.id}
-                    defaultValue={owner.id}
-                    defaultChecked={true}
-                    label={owner.name}
-                    name="owner"
-                    type="checkbox"
-                  />
-                ))}
-              </fieldset>
-
-              <div>
-                <Btn type="submit">Save Owners</Btn>
-              </div>
-            </Form>
-          </>
-        )}
-
-        <h2>Add Owners</h2>
-        <Form className="relative flex items-end mb-2">
-          <Input
-            id="search"
-            label="Search"
-            name="owner-search"
-            defaultValue={ownerSearch}
-            className="flex-grow"
-            classes={{ input: 'pr-8' }}
-          />
-          <Btn
-            type="submit"
-            isPlain
-            className="absolute right-0 bottom-0 border-transparent bg-transparent text-inherit"
+        <Dialog id="delete-modal" toggle="Delete">
+          <p>Are you sure you want to delete this entry?</p>
+          <Form
+            action={`/pet/${pet.id}/delete`}
+            method="POST"
+            onSubmit={promptDelete}
           >
-            <Svg label="Search Owners" icon="magnifying-glass" />
-          </Btn>
-        </Form>
-
-        <newOwnerFetcher.Form
-          ref={newOwnerRef}
-          action={`/pet/${pet.id}/owner`}
-          method="POST"
-          className="mb-8"
-        >
-          {personData?.length > 0 && (
-            <fieldset className="mb-2">
-              <legend>Existing Owners</legend>
-              {personData.map((person) => (
-                <Input
-                  key={person.id}
-                  id={person.id}
-                  defaultValue={person.id}
-                  label={person.name}
-                  name="owner"
-                  type="checkbox"
-                />
-              ))}
-            </fieldset>
-          )}
-          <Input
-            id="new-owner-name"
-            label="New Owner Name"
-            name="new-owner-name"
-            className="mb-2"
-          />
-          <Btn type="submit">Add Owner</Btn>
-        </newOwnerFetcher.Form>
-
-        <Form action={`/pet/${pet.id}/delete`} method="POST">
-          <Btn type="submit">Delete Pet</Btn>
-        </Form>
+            <Btn type="submit">Delete Pet</Btn>
+          </Form>
+        </Dialog>
       </div>
     </LayoutDefault>
   );

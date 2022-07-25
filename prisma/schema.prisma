@@ -6,52 +6,29 @@ generator client {
 }
 
 datasource db {
-  provider = "postgres"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id     String     @id 
-  email  String     @unique
-  password String
+model Pet {
+  id        String    @id @default(cuid())
+  name      String
+  type      String?
+  breed     String?
+  birthday  DateTime?
+  imageId   String?   @unique
+  image     Upload?   @relation(fields: [imageId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model Upload {
-  id     String     @id 
-  name   String
-  url    String
-  size   Int
-  type   String
-  person Person?
-  pet    Pet?
+  id        String       @id @default(cuid())
+  name      String
+  url       String
+  size      Int?
+  type      String?
+  pet       Pet?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
-
-model Person {
-  id      String      @id
-  name    String
-  pets    Pet[]
-  // pets   PersonOnPet[]
-  imageId String?
-  image   Upload?     @relation(fields: [imageId], references: [id])
-}
-
-model Pet {
-  id      String      @id
-  name    String
-  type    String
-  birthday DateTime   @default(now())
-  owners   Person[]
-  // owners   PersonOnPet[]
-  imageId String?
-  image   Upload?     @relation(fields: [imageId], references: [id])
-}
-
-// model PersonOnPet {
-//   // id          Int        @id @default(autoincrement())
-//   person      Person     @relation(fields: [personId], references: [id])
-//   personId    String // relation scalar field (used in the `@relation` attribute above)
-//   pet         Pet        @relation(fields: [petId], references: [id])
-//   petId       String // relation scalar field (used in the `@relation` attribute above)
-
-//   @@id([personId, petId])
-// }

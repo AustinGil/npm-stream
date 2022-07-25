@@ -1,7 +1,6 @@
 import { redirect, json } from '@remix-run/node';
 import { useLoaderData, useActionData, Form } from '@remix-run/react';
 import { z } from 'zod';
-import { ulid } from 'ulid';
 import { isFetchRequest, searchParamsToQuery } from '../../utils.js';
 import { db } from '../../services/index.js';
 import { Btn, Input, Grid, Card } from '../../components/index.js';
@@ -71,10 +70,7 @@ export async function action({ request }) {
   }
 
   const results = await db.person.create({
-    data: {
-      id: ulid(),
-      ...data,
-    },
+    data: data,
   });
 
   if (isFetchRequest(request)) {

@@ -5,7 +5,6 @@ import {
 } from '@remix-run/node';
 import { useActionData, Link, Form } from '@remix-run/react';
 import { z } from 'zod';
-import { ulid } from 'ulid';
 import { db, uploadService } from '../services/index.js';
 import LayoutDefault from '../layouts/Default.jsx';
 import { Btn, Input } from '../components/index.js';
@@ -47,12 +46,9 @@ export async function action({ request }) {
     };
   }
 
-  data.id = ulid();
-
   if (body.file && body.file.name && body.file.size) {
     data.image = {
       create: {
-        id: ulid(),
         size: body.image.size,
         url: `/uploads/${body.image.name}`,
         type: body.image.type,

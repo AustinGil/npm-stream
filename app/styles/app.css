@@ -45,6 +45,10 @@
   .btn {
     @apply border-primary px-3 text-white bg-primary transition-all hover:border-rose-700 hover:bg-rose-700 focus:border-rose-700 focus:bg-rose-700;
   }
+  
+  .card :where(a:not(.static), button, input, select, textarea) {
+    position: relative;
+  }
 }
 
 .visually-hidden {
@@ -69,10 +73,6 @@
   stroke-width: 0;
   stroke: currentColor;
   fill: currentColor;
-}
-
-.card :where(a:not(.static), button, input, select, textarea) {
-  position: relative;
 }
 
 .sort-direction-toggle:focus-within {
