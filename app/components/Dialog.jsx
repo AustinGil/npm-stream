@@ -71,7 +71,6 @@ const Dialog = ({ toggle, id = '', children }) => {
   }, [isShowing]);
 
   function onKeydown(event) {
-    console.log(isShowing);
     if (event.keyCode === KEYCODES.ESC) {
       close();
       return;
